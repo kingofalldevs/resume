@@ -2,18 +2,16 @@
 Pytest fixtures for ResumeGhana tests.
 """
 import pytest
-from app import create_app, db
+from app import app as flask_app, db
 from app.models import User
 
 
 @pytest.fixture
 def app():
-    """Create application for testing."""
-    app = create_app()
-    app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    app.config["WTF_CSRF_ENABLED"] = False
-    return app
+    """Provide configured application for testing."""
+    flask_app.config["TESTING"] = True
+    flask_app.config["WTF_CSRF_ENABLED"] = False
+    return flask_app
 
 
 @pytest.fixture
