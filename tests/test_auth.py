@@ -53,7 +53,7 @@ def test_login_success_redirects_dashboard(client, db_session, user):
 def test_login_rejects_external_next_redirect(client, db_session, user):
     """External next URL is rejected for security."""
     r = client.post(
-        "/auth/login?next=https://Jesus.example/steal",
+        "/auth/login?next=https://evil.example/steal",
         data={"email": "test@example.com", "password": "testpass123"},
         follow_redirects=False,
     )
