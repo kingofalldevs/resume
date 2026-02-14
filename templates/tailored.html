@@ -4,14 +4,10 @@
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 resume-actions">
     <h2 class="text-xl sm:text-2xl font-bold">Your Tailored Resume</h2>
     <div class="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
-        {% if current_user.is_authenticated %}
-        <form method="POST" action="{{ url_for('resume.save') }}" class="inline">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="px-3 py-2 sm:px-4 sm:py-2 border border-[#ff6600] text-[#ff6600] rounded-lg font-semibold hover:bg-[#ff6600]/10 transition text-sm sm:text-base">💾 Save</button>
-        </form>
-        {% endif %}
+        <a href="{{ url_for('resume.checkout', action='save') }}" class="px-3 py-2 sm:px-4 sm:py-2 border border-[#ff6600] text-[#ff6600] rounded-lg font-semibold hover:bg-[#ff6600]/10 transition text-sm sm:text-base">💾 Save</a>
+        <a href="{{ url_for('resume.checkout', action='download') }}" class="px-3 py-2 sm:px-4 sm:py-2 bg-[#ff6600] text-white rounded-lg font-semibold hover:opacity-90 transition text-sm sm:text-base">⬇ Download</a>
         <a href="{{ url_for('resume.builder') }}" class="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base">Start Over</a>
-        <button onclick="window.print()" class="px-3 py-2 sm:px-4 sm:py-2 bg-[#ff6600] text-white rounded-lg font-semibold hover:opacity-90 transition text-sm sm:text-base">🖨️ Print / PDF</button>
+        <button onclick="window.print()" class="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition text-sm sm:text-base">🖨️ Print</button>
     </div>
 </div>
 

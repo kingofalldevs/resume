@@ -12,6 +12,58 @@
         background-attachment: fixed;
     }
 
+    /* Orange decorative background design layers */
+    .landing-shell {
+        position: relative;
+        isolation: isolate;
+    }
+
+    .landing-shell::before,
+    .landing-shell::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .landing-shell::before {
+        inset: -40px -20px auto auto;
+        width: clamp(220px, 36vw, 420px);
+        height: clamp(220px, 36vw, 420px);
+        border-radius: 999px;
+        background:
+            radial-gradient(circle at 30% 30%, rgba(255, 102, 0, 0.18), rgba(255, 102, 0, 0.04) 60%, rgba(255, 102, 0, 0) 72%),
+            repeating-radial-gradient(circle at 50% 50%, rgba(255, 102, 0, 0.07) 0 2px, rgba(255, 102, 0, 0) 2px 14px);
+        filter: blur(0.2px);
+    }
+
+    .landing-shell::after {
+        inset: auto auto -60px -40px;
+        width: clamp(260px, 42vw, 500px);
+        height: clamp(260px, 42vw, 500px);
+        border-radius: 999px;
+        background:
+            radial-gradient(circle at 70% 70%, rgba(255, 102, 0, 0.2), rgba(255, 102, 0, 0.06) 58%, rgba(255, 102, 0, 0) 74%),
+            repeating-linear-gradient(135deg, rgba(255, 102, 0, 0.08) 0 2px, rgba(255, 102, 0, 0) 2px 12px);
+        opacity: 0.95;
+    }
+
+    section.reveal-on-scroll {
+        position: relative;
+        overflow: hidden;
+    }
+
+    section.reveal-on-scroll::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 12% 15%, rgba(255, 102, 0, 0.06), rgba(255, 102, 0, 0) 30%),
+            radial-gradient(circle at 88% 78%, rgba(255, 102, 0, 0.06), rgba(255, 102, 0, 0) 28%);
+        z-index: -1;
+    }
+
     nav,
     footer {
         background: #ffffff !important;

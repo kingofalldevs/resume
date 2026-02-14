@@ -20,10 +20,33 @@ migrate = Migrate()
 login_manager = LoginManager()
 csrf = CSRFProtect()
 
+
+def _fallback_load_env(env_path: str):
+    """Load .env file without python-dotenv dependency."""
+    if not os.path.exists(env_path):
+        return
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = value
+    except Exception:
+        # Keep startup resilient even if .env is malformed.
+        pass
+
+
 # Load .env for local/dev runs (Render/prod uses real env vars).
 _base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if load_dotenv is not None:
     load_dotenv(os.path.join(_base, ".env"), override=False)
+else:
+    _fallback_load_env(os.path.join(_base, ".env"))
 
 app = Flask(__name__, template_folder=os.path.join(_base, "templates"), static_folder=os.path.join(_base, "static"))
 

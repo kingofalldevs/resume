@@ -24,8 +24,12 @@ class Config:
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max upload
 
     # Hugging Face
-    HF_API_TOKEN = os.environ.get("HF_API_TOKEN", "")
+    HF_API_TOKEN = os.environ.get("HF_API_TOKEN") or os.environ.get("HF_TOKEN", "")
     HF_MODEL = os.environ.get("HF_MODEL", "Qwen/Qwen2.5-Coder-32B-Instruct")
+
+    # Paystack
+    PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY", "")
+    PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
 
     # Rate limiting for AI routes (requests per minute)
     AI_RATE_LIMIT = "30 per minute"

@@ -1,45 +1,77 @@
-<div class="resume-container" style="max-width: 800px; width: 100%; margin: 0 auto; font-family: 'Helvetica Neue', 'Arial', sans-serif; color: #1a1a1a; overflow-wrap: break-word;">
+<div class="resume-container" role="document" aria-label="Resume preview">
 <style>
-.resume-container h1 { font-size: 32px; font-weight: 800; color: #059669; margin-bottom: 0.25rem; letter-spacing: -0.5px; }
-.resume-container .role-title { font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 0.75rem; }
-.resume-container h2 { font-size: 14px; font-weight: 700; color: #065f46; background: #d1fae5; padding: 6px 12px; margin-top: 1.5rem; display: inline-block; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 4px; }
-.resume-container .contact { color: #6b7280; font-size: 14px; margin-bottom: 1rem; }
-.resume-container .summary-text { line-height: 1.6; margin-bottom: 0.5rem; color: #374151; font-size: 14px; }
-.resume-container .skill-tag { display: inline-block; background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #065f46; padding: 5px 12px; border-radius: 20px; margin: 3px 6px 3px 0; font-size: 13px; font-weight: 500; }
-.resume-container ul { margin: 0.5rem 0; padding-left: 1.2rem; }
-.resume-container li { margin-bottom: 0.35rem; line-height: 1.5; font-size: 14px; }
-.resume-container .career-value { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); padding: 14px 18px; margin-top: 0.75rem; line-height: 1.6; font-size: 14px; color: #374151; border-radius: 8px; }
+.resume-container { max-width: 860px; margin: 0 auto; font-family: "Inter", "Segoe UI", sans-serif; color: #16303f; background: #ffffff; border: 1px solid #cfe3eb; border-radius: 14px; overflow: hidden; }
+.header { background: linear-gradient(90deg, #0f8598 0%, #0a6f86 100%); color: #fff; padding: 20px 24px; }
+.name { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.06; }
+.role { margin-top: 6px; font-size: 14px; opacity: .95; font-weight: 500; }
+.contact { margin-top: 10px; font-size: 12px; opacity: .95; line-height: 1.45; }
+.body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 18px 22px 22px; background: radial-gradient(circle at 90% 92%, rgba(15,133,152,.08), rgba(15,133,152,0) 28%); }
+.block { background: #f9fcfd; border: 1px solid #d8ebf1; border-radius: 10px; padding: 12px 14px; }
+.block.wide { grid-column: 1 / -1; }
+.resume-container h2 { margin: 0 0 8px; font-size: 12px; color: #0f8598; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+.resume-container p { margin: 0; font-size: 13px; line-height: 1.55; }
+.resume-container ul { margin: 6px 0 0 18px; padding: 0; }
+.resume-container li { margin-bottom: 6px; font-size: 13px; line-height: 1.5; color: #1b3f52; }
+.resume-container .skill-tag { display: inline-block; background: #e6f5f8; border: 1px solid #c7e7ee; color: #0b7387; border-radius: 999px; padding: 4px 9px; margin: 3px 4px 3px 0; font-size: 11px; font-weight: 600; }
+.career { background: #eaf7fa; border-left: 4px solid #0f8598; border-radius: 8px; padding: 10px 12px; }
+@media (max-width: 760px) {
+  .header { padding: 18px; }
+  .body { grid-template-columns: 1fr; padding: 16px; }
+  .block.wide { grid-column: auto; }
+}
 </style>
-<h1>{{ full_name }}</h1>
-{% if role %}<div class="role-title">{{ role }}</div>{% endif %}
-<div class="contact">
+<header class="header">
+  <h1 class="name">{{ full_name }}</h1>
+  {% if role %}<div class="role">{{ role }}</div>{% endif %}
+  <div class="contact">
     {% if email %}{{ email }}{% endif %}
     {% if phone %} | {{ phone }}{% endif %}
     {% if country %} | {{ country }}{% endif %}
     {% if links %}<br>{{ links }}{% endif %}
-</div>
-{% if summary %}
-<h2>Professional Summary</h2>
-<div style="display:block; width:100%;"></div>
-<p class="summary-text">{{ summary }}</p>
-{% endif %}
-<h2>Experience</h2>
-<div style="display:block; width:100%;"></div>
-<div>{{ experience | safe }}</div>
-<h2>Skills</h2>
-<div style="display:block; width:100%;"></div>
-<div>{{ skills | safe }}</div>
-<h2>Education</h2>
-<div style="display:block; width:100%;"></div>
-<div>{{ education | safe }}</div>
-{% if certifications %}
-<h2>Certifications</h2>
-<div style="display:block; width:100%;"></div>
-<p style="font-size:14px;">{{ certifications }}</p>
-{% endif %}
-{% if career_value %}
-<h2>Career Objective & Value</h2>
-<div style="display:block; width:100%;"></div>
-<div class="career-value">{{ career_value }}</div>
-{% endif %}
+  </div>
+</header>
+
+<section class="body">
+  {% if summary %}
+  <article class="block wide">
+    <h2>Professional Summary</h2>
+    <p>{{ summary }}</p>
+  </article>
+  {% endif %}
+
+  {% if experience %}
+  <article class="block wide">
+    <h2>Experience</h2>
+    <div>{{ experience | safe }}</div>
+  </article>
+  {% endif %}
+
+  {% if skills %}
+  <article class="block">
+    <h2>Skills</h2>
+    <div>{{ skills | safe }}</div>
+  </article>
+  {% endif %}
+
+  {% if education %}
+  <article class="block">
+    <h2>Education</h2>
+    <div>{{ education | safe }}</div>
+  </article>
+  {% endif %}
+
+  {% if certifications %}
+  <article class="block">
+    <h2>Certifications</h2>
+    <p>{{ certifications }}</p>
+  </article>
+  {% endif %}
+
+  {% if career_value %}
+  <article class="block">
+    <h2>Career Objective & Value</h2>
+    <div class="career">{{ career_value }}</div>
+  </article>
+  {% endif %}
+</section>
 </div>

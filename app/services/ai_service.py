@@ -31,7 +31,7 @@ def _get_settings():
     except RuntimeError:
         pass
     if not api_token:
-        api_token = os.environ.get("HF_API_TOKEN", "")
+        api_token = os.environ.get("HF_API_TOKEN") or os.environ.get("HF_TOKEN", "")
     if not model:
         model = os.environ.get("HF_MODEL", _DEFAULT_MODEL)
     if not api_token:

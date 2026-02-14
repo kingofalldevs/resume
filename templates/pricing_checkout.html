@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Payment - ResumeGhana{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <section class="bg-white rounded-2xl border border-[#ff6600]/20 shadow-sm p-5 sm:p-6">
+        <h2 class="text-xl sm:text-2xl font-bold text-[#ff6600] mb-2">Unlock {{ action|title }}</h2>
+        <p class="text-gray-600 text-sm sm:text-base mb-5">
+            Secure checkout powered by Paystack. Pay once to continue with your selected action.
+        </p>
+
+        <div class="rounded-xl border border-[#ff6600]/20 bg-[#ff6600]/5 p-4 mb-5">
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-sm font-semibold text-gray-700">Resume action</span>
+                <span class="text-sm font-bold text-[#ff6600] uppercase">{{ action }}</span>
+            </div>
+            <div class="flex items-center justify-between gap-3 mt-2">
+                <span class="text-sm font-semibold text-gray-700">Price</span>
+                <span class="text-2xl font-black text-[#ff6600]">GHS {{ amount_ghs }}</span>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('resume.checkout_start') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="{{ action }}">
+            <button type="submit" class="w-full rounded-xl bg-[#ff6600] text-white font-bold py-3 hover:opacity-90 transition">
+                Pay GHS {{ amount_ghs }} and {{ action|title }}
+            </button>
+        </form>
+
+        <p class="text-xs text-gray-500 mt-4">
+            By continuing, you agree to process payment through Paystack.
+        </p>
+        <a href="{{ url_for('resume.builder') }}" class="inline-block mt-3 text-sm text-[#ff6600] hover:opacity-80 transition">Back to editor</a>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5">
+        <h3 class="font-bold text-gray-800 mb-3">Resume Preview</h3>
+        <div class="max-h-[80vh] overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+            <iframe id="checkout-preview-frame" class="w-full h-[78vh] border-0 bg-white"></iframe>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    const frame = document.getElementById("checkout-preview-frame");
+    if (!frame) return;
+    const html = {{ content | tojson }};
+    frame.srcdoc = html;
+  }());
+</script>
+{% endblock %}

@@ -4,7 +4,10 @@ Resume routes: builder, template picker, save, view, download.
 import os
 import base64
 import secrets
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app, jsonify
+import json
+import urllib.error
+import urllib.request
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app, jsonify, make_response
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from pypdf import PdfReader
@@ -14,6 +17,9 @@ from app.models import Resume, ResumeSection
 from app.services.resume_builder import build_resume_html, TEMPLATES
 
 resume_bp = Blueprint("resume", __name__)
+
+PAYSTACK_AMOUNT_GHS = 10
+PAYSTACK_AMOUNT_PESEWAS = PAYSTACK_AMOUNT_GHS * 100
 
 
 def _extract_text_from_pdf(file):
@@ -36,6 +42,110 @@ def _parse_resume_text(text):
         "experience": text[500:1500] if len(text) > 500 else text,
         "education": text[1500:] if len(text) > 1500 else "",
     }
+
+
+def _save_resume_record(resume_data: dict, user_id: int):
+    """Persist resume_data to DB and return created Resume."""
+    title = f"Resume - {resume_data.get('role', 'Untitled')}"
+    template_name = resume_data.get("template_name", "modern_minimal")
+    resume = Resume(user_id=user_id, title=title, template_name=template_name)
+    db.session.add(resume)
+    db.session.flush()
+
+    sections_data = [
+        ("personal", {"name": resume_data.get("name"), "email": resume_data.get("email"), "phone": resume_data.get("phone"), "country": resume_data.get("country"), "links": resume_data.get("links"), "role": resume_data.get("role")}),
+        ("summary", {"raw": resume_data.get("career_objective", "") or resume_data.get("abilities", "")}),
+        ("experience", {"raw": resume_data.get("experience", "")}),
+        ("education", {"raw": resume_data.get("education", "")}),
+        ("skills", {"raw": resume_data.get("skills", "")}),
+    ]
+    for section_type, content in sections_data:
+        db.session.add(ResumeSection(resume_id=resume.id, section_type=section_type, content=content))
+
+    db.session.commit()
+    return resume
+
+
+def _paystack_secret_key() -> str:
+    """Get Paystack secret key from config or environment."""
+    key = current_app.config.get("PAYSTACK_SECRET_KEY", "") or os.environ.get("PAYSTACK_SECRET_KEY", "")
+    return key.strip()
+
+
+def _paystack_headers(secret_key: str, include_json: bool = False) -> dict:
+    """Build Paystack headers with a browser-like User-Agent.
+
+    Some edge filters reject generic python-urllib requests that omit User-Agent.
+    """
+    headers = {
+        "Authorization": f"Bearer {secret_key}",
+        "User-Agent": "Mozilla/5.0 (compatible; ResumeGhana/1.0; +https://resumeghana.local)",
+        "Accept": "application/json",
+    }
+    if include_json:
+        headers["Content-Type"] = "application/json"
+    return headers
+
+
+def _paystack_initialize(email: str, reference: str, callback_url: str, action: str):
+    """Initialize Paystack transaction and return authorization URL."""
+    secret_key = _paystack_secret_key()
+    if not secret_key:
+        raise RuntimeError("PAYSTACK_SECRET_KEY not set")
+
+    payload = {
+        "email": email,
+        "amount": PAYSTACK_AMOUNT_PESEWAS,
+        "currency": "GHS",
+        "reference": reference,
+        "callback_url": callback_url,
+        "metadata": {
+            "user_id": current_user.id,
+            "action": action,
+        },
+    }
+    req = urllib.request.Request(
+        "https://api.paystack.co/transaction/initialize",
+        data=json.dumps(payload).encode("utf-8"),
+        headers=_paystack_headers(secret_key, include_json=True),
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        raw = err.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Paystack initialize failed ({err.code}): {raw}") from err
+    except urllib.error.URLError as err:
+        raise RuntimeError(f"Paystack initialize request failed: {err.reason}") from err
+
+    if not body.get("status") or not body.get("data", {}).get("authorization_url"):
+        raise RuntimeError(body.get("message") or "Paystack initialize failed")
+    return body["data"]["authorization_url"]
+
+
+def _paystack_verify(reference: str):
+    """Verify Paystack transaction by reference."""
+    secret_key = _paystack_secret_key()
+    if not secret_key:
+        raise RuntimeError("PAYSTACK_SECRET_KEY not set")
+    req = urllib.request.Request(
+        f"https://api.paystack.co/transaction/verify/{reference}",
+        headers=_paystack_headers(secret_key),
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as err:
+        raw = err.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Paystack verification failed ({err.code}): {raw}") from err
+    except urllib.error.URLError as err:
+        raise RuntimeError(f"Paystack verification request failed: {err.reason}") from err
+
+    if not body.get("status"):
+        raise RuntimeError(body.get("message") or "Paystack verification failed")
+    return body.get("data", {})
 
 
 @resume_bp.route("/build", methods=["GET", "POST"])
@@ -167,7 +277,7 @@ def template_preview():
 @resume_bp.route("/templates/select", methods=["POST"])
 @login_required
 def template_select():
-    """Final template selection: save resume and redirect to view."""
+    """Final template selection: render preview and wait for paid action."""
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("Session expired. Please start over.", "error")
@@ -180,70 +290,124 @@ def template_select():
     resume_data["template_name"] = template_name
     session["resume_data"] = resume_data
 
-    # Save to database
-    title = f"Resume - {resume_data.get('role', 'Untitled')}"
-    resume = Resume(
-        user_id=current_user.id,
-        title=title,
-        template_name=template_name,
-    )
-    db.session.add(resume)
-    db.session.flush()
-
-    sections_data = [
-        ("personal", {"name": resume_data.get("name"), "email": resume_data.get("email"), "phone": resume_data.get("phone"), "country": resume_data.get("country"), "links": resume_data.get("links"), "role": resume_data.get("role")}),
-        ("summary", {"raw": resume_data.get("career_objective", "") or resume_data.get("abilities", "")}),
-        ("experience", {"raw": resume_data.get("experience", "")}),
-        ("education", {"raw": resume_data.get("education", "")}),
-        ("skills", {"raw": resume_data.get("skills", "")}),
-    ]
-    for section_type, content in sections_data:
-        sec = ResumeSection(resume_id=resume.id, section_type=section_type, content=content)
-        db.session.add(sec)
-
-    db.session.commit()
-
     # Render with chosen template and show
     html = build_resume_html(resume_data, template_name)
-    flash("Resume created and saved to dashboard.", "success")
-    return render_template("tailored.html", content=html, resume_id=resume.id)
+    flash("Preview ready. Choose Save or Download to continue to payment.", "info")
+    return render_template("tailored.html", content=html)
 
 
 @resume_bp.route("/save", methods=["POST"])
 @login_required
 def save():
-    """Save resume from session to database."""
+    """Legacy endpoint: redirect to paid checkout save flow."""
+    return redirect(url_for("resume.checkout", action="save"))
+
+
+@resume_bp.route("/checkout")
+@login_required
+def checkout():
+    """Show pricing + resume preview before Paystack payment."""
     resume_data = session.get("resume_data")
     if not resume_data:
-        flash("No resume data to save.", "error")
+        flash("No resume data available. Please build your resume first.", "error")
         return redirect(url_for("resume.builder"))
 
-    title = request.form.get("title", f"Resume - {resume_data.get('role', 'Untitled')}")
+    action = request.args.get("action", "download").strip().lower()
+    if action not in {"save", "download"}:
+        action = "download"
+
     template_name = resume_data.get("template_name", "modern_minimal")
-
-    resume = Resume(
-        user_id=current_user.id,
-        title=title,
-        template_name=template_name,
+    html = build_resume_html(resume_data, template_name)
+    public_key = current_app.config.get("PAYSTACK_PUBLIC_KEY", "") or os.environ.get("PAYSTACK_PUBLIC_KEY", "")
+    return render_template(
+        "pricing_checkout.html",
+        content=html,
+        action=action,
+        amount_ghs=PAYSTACK_AMOUNT_GHS,
+        paystack_public_key=public_key,
     )
-    db.session.add(resume)
-    db.session.flush()
 
-    # Store full resume data in sections for easy retrieval
-    sections_data = [
-        ("personal", {"name": resume_data.get("name"), "email": resume_data.get("email"), "phone": resume_data.get("phone"), "country": resume_data.get("country"), "links": resume_data.get("links"), "role": resume_data.get("role")}),
-        ("summary", {"raw": resume_data.get("career_objective", "") or resume_data.get("abilities", "")}),
-        ("experience", {"raw": resume_data.get("experience", "")}),
-        ("education", {"raw": resume_data.get("education", "")}),
-        ("skills", {"raw": resume_data.get("skills", "")}),
-    ]
-    for section_type, content in sections_data:
-        sec = ResumeSection(resume_id=resume.id, section_type=section_type, content=content)
-        db.session.add(sec)
 
-    db.session.commit()
-    flash("Resume saved to dashboard.", "success")
-    return redirect(url_for("dashboard.index"))
+@resume_bp.route("/checkout/start", methods=["POST"])
+@login_required
+def checkout_start():
+    """Initialize Paystack transaction and redirect to hosted payment page."""
+    resume_data = session.get("resume_data")
+    if not resume_data:
+        flash("No resume data available. Please build your resume first.", "error")
+        return redirect(url_for("resume.builder"))
+
+    action = request.form.get("action", "download").strip().lower()
+    if action not in {"save", "download"}:
+        action = "download"
+
+    email = (resume_data.get("email") or current_user.email or "").strip()
+    if not email:
+        flash("A valid email is required to process payment.", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    reference = f"rg_{current_user.id}_{secrets.token_hex(8)}"
+    callback_url = url_for("resume.checkout_callback", _external=True)
+    try:
+        authorization_url = _paystack_initialize(email=email, reference=reference, callback_url=callback_url, action=action)
+    except Exception as e:
+        flash(f"Could not start payment: {e}", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    session["pending_payment"] = {"reference": reference, "action": action}
+    return redirect(authorization_url)
+
+
+@resume_bp.route("/checkout/callback")
+@login_required
+def checkout_callback():
+    """Handle Paystack callback, verify transaction, then execute requested action."""
+    reference = (request.args.get("reference") or request.args.get("trxref") or "").strip()
+    pending = session.get("pending_payment") or {}
+    expected_ref = pending.get("reference", "")
+    action = (pending.get("action") or "download").strip().lower()
+    if action not in {"save", "download"}:
+        action = "download"
+
+    if not reference or not expected_ref or reference != expected_ref:
+        flash("Invalid or expired payment reference. Please try again.", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    try:
+        payment_data = _paystack_verify(reference)
+    except Exception as e:
+        flash(f"Payment verification failed: {e}", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    if payment_data.get("status") != "success":
+        flash("Payment was not successful. Please try again.", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    if int(payment_data.get("amount", 0) or 0) < PAYSTACK_AMOUNT_PESEWAS:
+        flash("Payment amount is incomplete. Please contact support.", "error")
+        return redirect(url_for("resume.checkout", action=action))
+
+    resume_data = session.get("resume_data")
+    if not resume_data:
+        flash("Session expired after payment. Please rebuild your resume.", "error")
+        return redirect(url_for("resume.builder"))
+
+    template_name = resume_data.get("template_name", "modern_minimal")
+    html = build_resume_html(resume_data, template_name)
+    session.pop("pending_payment", None)
+
+    if action == "save":
+        resume = _save_resume_record(resume_data, current_user.id)
+        flash("Payment successful. Resume saved to dashboard.", "success")
+        return redirect(url_for("resume.view", id=resume.id))
+
+    # action == "download": return downloadable html file
+    filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
+    filename = f"{filename_base}_resume.html"
+    response = make_response(html)
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 def _resume_to_data(resume):
