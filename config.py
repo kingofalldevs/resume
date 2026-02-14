@@ -31,6 +31,12 @@ class Config:
     PAYSTACK_PUBLIC_KEY = os.environ.get("PAYSTACK_PUBLIC_KEY", "")
     PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
 
+    # SendGrid login OTP
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
+    SENDGRID_FROM_EMAIL = os.environ.get("SENDGRID_FROM_EMAIL", "")
+    LOGIN_OTP_EXP_MINUTES = int(os.environ.get("LOGIN_OTP_EXP_MINUTES", "10"))
+    LOGIN_OTP_MAX_ATTEMPTS = int(os.environ.get("LOGIN_OTP_MAX_ATTEMPTS", "5"))
+
     # Rate limiting for AI routes (requests per minute)
     AI_RATE_LIMIT = "30 per minute"
 
