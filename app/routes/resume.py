@@ -387,6 +387,18 @@ def checkout_callback():
         flash("Payment amount is incomplete. Please contact support.", "error")
         return redirect(url_for("resume.checkout", action=action))
 
+    # Extra ownership check: payment metadata must belong to current user.
+    metadata = payment_data.get("metadata") or {}
+    metadata_user_id = metadata.get("user_id")
+    if metadata_user_id is not None:
+        try:
+            if int(metadata_user_id) != int(current_user.id):
+                flash("Payment user mismatch detected. Please try again.", "error")
+                return redirect(url_for("resume.checkout", action=action))
+        except (TypeError, ValueError):
+            flash("Invalid payment metadata. Please try again.", "error")
+            return redirect(url_for("resume.checkout", action=action))
+
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("Session expired after payment. Please rebuild your resume.", "error")
@@ -395,18 +407,19 @@ def checkout_callback():
     template_name = resume_data.get("template_name", "modern_minimal")
     html = build_resume_html(resume_data, template_name)
     session.pop("pending_payment", None)
+    resume = _save_resume_record(resume_data, current_user.id)
 
     if action == "save":
-        resume = _save_resume_record(resume_data, current_user.id)
         flash("Payment successful. Resume saved to dashboard.", "success")
         return redirect(url_for("resume.view", id=resume.id))
 
-    # action == "download": return downloadable html file
+    # action == "download": return downloadable html file (and keep a saved copy)
     filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
     filename = f"{filename_base}_resume.html"
     response = make_response(html)
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    response.headers["X-Resume-Id"] = str(resume.id)
     return response
 
 

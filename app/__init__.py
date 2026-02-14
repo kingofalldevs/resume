@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy.exc import SQLAlchemyError
 
 try:
     from dotenv import load_dotenv
@@ -73,7 +74,13 @@ from app.models import User
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    try:
+        return User.query.get(int(user_id))
+    except (ValueError, TypeError, SQLAlchemyError):
+        # Avoid full-page 500s when DB is temporarily unavailable
+        # or an invalid user id is present in session.
+        db.session.rollback()
+        return None
 
 
 # Register blueprints
@@ -90,8 +97,13 @@ app.register_blueprint(resume_bp)
 app.register_blueprint(ai_bp, url_prefix="/api")
 csrf.exempt(ai_bp)  # API uses JSON, auth via session
 
-# Local developer safety net: create tables automatically for SQLite.
-# Production should rely on migrations.
-if str(app.config.get("SQLALCHEMY_DATABASE_URI", "")).startswith("sqlite:///"):
+def _safe_create_all():
+    """Best-effort table creation for new environments."""
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except SQLAlchemyError:
+            db.session.rollback()
+
+
+_safe_create_all()

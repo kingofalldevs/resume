@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-label="AI profile illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff3e8"/>
+      <stop offset="100%" stop-color="#ffe5cf"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <rect x="70" y="80" width="1060" height="560" rx="28" fill="#ffffff"/>
+  <rect x="120" y="130" width="250" height="400" rx="18" fill="#fff6ef"/>
+  <circle cx="245" cy="230" r="58" fill="#ff6600" opacity=".18"/>
+  <rect x="165" y="320" width="160" height="16" rx="8" fill="#ffd8bf"/>
+  <rect x="165" y="352" width="122" height="14" rx="7" fill="#ffe7d6"/>
+  <rect x="420" y="140" width="655" height="70" rx="14" fill="#fff4ea"/>
+  <rect x="450" y="165" width="320" height="18" rx="9" fill="#ffb37f"/>
+  <rect x="420" y="236" width="655" height="120" rx="16" fill="#fffaf6"/>
+  <rect x="450" y="268" width="560" height="14" rx="7" fill="#ffd5b6"/>
+  <rect x="450" y="298" width="430" height="14" rx="7" fill="#ffe4cf"/>
+  <rect x="420" y="380" width="310" height="150" rx="16" fill="#fff6ef"/>
+  <rect x="760" y="380" width="315" height="150" rx="16" fill="#fff6ef"/>
+  <path d="M970 470l34 34 58-58" fill="none" stroke="#ff6600" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

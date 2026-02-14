@@ -130,6 +130,9 @@
         height: 140px;
         object-fit: cover;
         border-radius: 12px;
+        background: #f9f9f9;
+        aspect-ratio: 16 / 9;
+        transition: transform 0.4s ease, opacity 0.35s ease;
     }
 
     .hero-visual-wrap {
@@ -155,6 +158,13 @@
     .step-card:hover,
     .template-card:hover {
         box-shadow: 0 12px 24px rgba(255, 102, 0, 0.16);
+        transform: translateY(-4px);
+    }
+
+    .feature-card:hover .card-media,
+    .step-card:hover .card-media,
+    .template-card:hover .card-media {
+        transform: scale(1.02);
     }
 
     .primary-btn {
@@ -192,6 +202,24 @@
     .reveal-on-scroll.show {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    .interactive-card {
+        opacity: 0.96;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-visual-wrap,
+        .hero-card,
+        .feature-card,
+        .step-card,
+        .template-card,
+        .metric-card,
+        .card-media,
+        .reveal-on-scroll {
+            transition: none !important;
+            transform: none !important;
+        }
     }
 
     .hero-badge {
@@ -308,7 +336,7 @@
                 <div class="hero-card rounded-2xl p-4 sm:p-5">
                     <div class="grid grid-cols-2 gap-3">
                         <div class="metric-card rounded-xl p-3">
-                            <p class="text-sm font-black text-[#ff6600]" data-counter="38">0%</p>
+                            <p class="text-sm font-black text-[#ff6600]" data-counter="55">0%</p>
                             <p class="text-xs text-soft">more interviews</p>
                         </div>
                         <div class="metric-card rounded-xl p-3">
@@ -327,7 +355,15 @@
                 </div>
             </div>
             <div class="hero-visual-wrap">
-                <img class="hero-image" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Professional resume workspace visual">
+                <img
+                    class="hero-image"
+                    src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}"
+                    alt="Professional resume workspace visual"
+                    width="1200"
+                    height="720"
+                    decoding="async"
+                    fetchpriority="high"
+                >
             </div>
         </div>
     </section>
@@ -337,21 +373,21 @@
         <p class="text-soft mb-8 max-w-2xl">Designed with a sharp visual hierarchy and clean card-based content flow inspired by top product sites.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="AI resume optimization dashboard">
+                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="AI resume optimization dashboard" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-wand-magic-sparkles"></i></div>
                 <h3 class="text-xl font-bold mb-2">AI Writing Upgrade</h3>
                 <p class="text-soft">Refines your summary, achievements, and role bullets with concise recruiter-friendly language.</p>
                 <p class="text-soft text-sm">Get strong action verbs, cleaner sentence structure, and role-targeted phrasing in seconds.</p>
             </article>
             <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Modern resume template interface">
+                <img class="card-media" src="{{ url_for('static', filename='card-layout.svg') }}" alt="Modern resume template interface" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-laptop-code"></i></div>
                 <h3 class="text-xl font-bold mb-2">Modern Layout System</h3>
                 <p class="text-soft">Clean cards and spacing inspired by product landing pages used by top tech teams.</p>
                 <p class="text-soft text-sm">Designed for readability, visual hierarchy, and fast scanning by hiring managers.</p>
             </article>
             <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="ATS resume score analytics">
+                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="ATS resume score analytics" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-file-circle-check"></i></div>
                 <h3 class="text-xl font-bold mb-2">ATS-First Structure</h3>
                 <p class="text-soft">Keeps formatting readable for both hiring managers and automated tracking systems.</p>
@@ -373,28 +409,28 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Sign up workflow for resume builder">
+                <img class="card-media" src="{{ url_for('static', filename='card-career.svg') }}" alt="Sign up workflow for resume builder" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">01</p>
                 <h3 class="font-bold text-lg mb-2">Create account</h3>
                 <p class="text-sm text-soft">Start quickly with simple sign up and instant access to the builder.</p>
                 <p class="text-soft text-sm">Your projects save automatically so you can continue editing from any device.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Adding work achievements into resume form">
+                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="Adding work achievements into resume form" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">02</p>
                 <h3 class="font-bold text-lg mb-2">Add your story</h3>
                 <p class="text-sm text-soft">Input your achievements and let AI sharpen impact and clarity.</p>
                 <p class="text-soft text-sm">Smart prompts help you turn duties into measurable achievements recruiters notice.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Choosing a resume template style">
+                <img class="card-media" src="{{ url_for('static', filename='card-layout.svg') }}" alt="Choosing a resume template style" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">03</p>
                 <h3 class="font-bold text-lg mb-2">Select template</h3>
                 <p class="text-sm text-soft">Pick from polished formats tailored to your target role.</p>
                 <p class="text-soft text-sm">Preview each style instantly and switch anytime without losing your content.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Download and apply to jobs workflow">
+                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="Download and apply to jobs workflow" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">04</p>
                 <h3 class="font-bold text-lg mb-2">Export and apply</h3>
                 <p class="text-sm text-soft">Download and apply confidently with an ATS-friendly resume.</p>
@@ -408,21 +444,21 @@
         <p class="text-soft mb-8 max-w-xl">Switch between design directions without starting over.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Modern minimal resume template preview">
+                <img class="card-media" src="{{ url_for('static', filename='card-layout.svg') }}" alt="Modern minimal resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <h3 class="font-bold text-lg mb-2">Modern Minimal</h3>
                 <p class="text-sm text-soft mb-4">Simple, elegant, and focused on readability for technical roles.</p>
                 <p class="text-soft text-sm">Best for software, product, and data candidates who want clear structure first.</p>
                 <span class="text-xs px-3 py-1 rounded-full bg-[#ff6600]/10 text-[#ff6600]">Popular</span>
             </article>
             <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Corporate professional resume template preview">
+                <img class="card-media" src="{{ url_for('static', filename='card-career.svg') }}" alt="Corporate professional resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <h3 class="font-bold text-lg mb-2">Corporate Professional</h3>
                 <p class="text-sm text-soft mb-4">A crisp formal layout for finance, operations, and leadership tracks.</p>
                 <p class="text-soft text-sm">Ideal when you need trust, clarity, and executive polish in one design language.</p>
                 <span class="text-xs px-3 py-1 rounded-full bg-[#ff6600]/10 text-[#ff6600]">Balanced</span>
             </article>
             <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Creative designer resume template preview">
+                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="Creative designer resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <h3 class="font-bold text-lg mb-2">Creative Designer</h3>
                 <p class="text-sm text-soft mb-4">Expressive format while staying ATS-safe and professionally sharp.</p>
                 <p class="text-soft text-sm">A stronger visual identity for designers, marketers, and brand-facing roles.</p>

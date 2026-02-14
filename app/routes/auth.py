@@ -4,6 +4,7 @@ Authentication routes: signup, login, logout.
 from urllib.parse import urljoin, urlparse
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
+from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models import User
 from app.utils import hash_password, verify_password
@@ -49,8 +50,13 @@ def signup():
             flash("Password must be at least 8 characters.", "error")
             return render_template("auth/signup.html")
 
-        if User.query.filter_by(email=email).first():
-            flash("An account with that email already exists.", "error")
+        try:
+            if User.query.filter_by(email=email).first():
+                flash("An account with that email already exists.", "error")
+                return render_template("auth/signup.html")
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Database error while checking email. Please try again.", "error")
             return render_template("auth/signup.html")
 
         user = User(
@@ -58,8 +64,13 @@ def signup():
             email=email,
             password_hash=hash_password(password),
         )
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Could not create account right now. Please try again.", "error")
+            return render_template("auth/signup.html")
         login_user(user, remember=True)
         flash("Account created successfully!", "success")
         return redirect(url_for("dashboard.index"))
@@ -82,7 +93,12 @@ def login():
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
 
-        user = User.query.filter_by(email=email).first()
+        try:
+            user = User.query.filter_by(email=email).first()
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash("Database error during login. Please try again.", "error")
+            return render_template("auth/login.html")
         if user and verify_password(password, user.password_hash):
             login_user(user, remember=_parse_remember_flag(request.form.get("remember")))
             next_url = request.args.get("next", "")
