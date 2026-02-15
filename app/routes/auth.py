@@ -91,6 +91,29 @@ def _mask_email(email: str) -> str:
     return f"{name_mask}@{domain}"
 
 
+def _reuse_pending_otp_if_active(user_id: int, email: str, remember: bool, next_url: str) -> bool:
+    """Reuse active OTP challenge to avoid duplicate email sends."""
+    pending = session.get("pending_login_otp")
+    if not pending:
+        return False
+    now = int(time.time())
+    if now > int(pending.get("expires_at", 0)):
+        session.pop("pending_login_otp", None)
+        return False
+    if int(pending.get("attempts_left", 0)) <= 0:
+        session.pop("pending_login_otp", None)
+        return False
+    if int(pending.get("user_id", -1)) != int(user_id):
+        return False
+    if (pending.get("email", "").strip().lower()) != email.strip().lower():
+        return False
+
+    pending["remember"] = bool(remember)
+    pending["next_url"] = next_url or url_for("dashboard.index")
+    session["pending_login_otp"] = pending
+    return True
+
+
 def _resolve_pending_user(pending: dict):
     """Load user for OTP verification with retry/fallback lookups."""
     user_id = pending.get("user_id")
@@ -174,6 +197,10 @@ def signup():
             flash("Account created successfully!", "success")
             return redirect(url_for("dashboard.index"))
 
+        if _reuse_pending_otp_if_active(user.id, user.email, True, url_for("dashboard.index")):
+            flash("A verification code was already sent. Please use the latest code in your email.", "info")
+            return redirect(url_for("auth.verify_otp"))
+
         otp = f"{secrets.randbelow(1000000):06d}"
         ok, err = _send_login_otp(user.email, otp)
         if not ok:
@@ -236,6 +263,10 @@ def login():
             if current_app.config.get("TESTING"):
                 login_user(user, remember=remember)
                 return redirect(next_url)
+
+            if _reuse_pending_otp_if_active(user.id, user.email, remember, next_url):
+                flash("A verification code was already sent. Please use the latest code in your email.", "info")
+                return redirect(url_for("auth.verify_otp"))
 
             otp = f"{secrets.randbelow(1000000):06d}"
             ok, err = _send_login_otp(user.email, otp)
