@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .chat-card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; padding: 2rem; max-width: 560px; margin: 0 auto; }
+    .chat-title { color: #111827; font-weight: 800; font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .chat-sub { color: #6b7280; font-size: 0.95rem; margin-bottom: 1.75rem; }
+    .chat-label { display: block; font-weight: 600; font-size: 0.9rem; color: #374151; margin-bottom: 0.5rem; }
+    .chat-input { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; transition: border-color 0.2s, box-shadow 0.2s; }
+    .chat-input:focus { outline: none; border-color: #ff6600; box-shadow: 0 0 0 3px rgba(255,102,0,0.15); }
+    .chat-input::placeholder { color: #9ca3af; }
+    .chat-textarea { min-height: 140px; resize: vertical; }
+    .form-group { margin-bottom: 1.25rem; }
+    .chat-btn { width: 100%; background: #ff6600; color: white; border: none; border-radius: 10px; padding: 0.9rem 1rem; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; }
+    .chat-btn:hover { opacity: 0.92; }
+    .chat-back { display: inline-flex; align-items: center; gap: 0.5rem; color: #ff6600; font-weight: 600; font-size: 0.9rem; margin-bottom: 1.5rem; transition: opacity 0.2s; }
+    .chat-back:hover { opacity: 0.8; color: #ff6600; }
+    .chat-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .chat-topic-btn { padding: 0.4rem 0.85rem; border-radius: 999px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; color: #4b5563; cursor: pointer; transition: all 0.2s; }
+    .chat-topic-btn:hover { border-color: #ff6600; background: rgba(255,102,0,0.08); color: #ff6600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <a href="{{ url_for('dashboard.index') }}" class="chat-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="chat-card">
+        <h1 class="chat-title">Chat with an Expert</h1>
+        <p class="chat-sub">Get personalized resume and career advice from our team. We'll respond within 24 hours.</p>
+
+        <form method="POST" action="{{ url_for('dashboard.chat_expert') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label class="chat-label" for="topic">Topic</label>
+                <input type="text" id="topic" name="topic" class="chat-input" placeholder="e.g. Resume review, Job search strategy" value="{{ request.form.get('topic', '') }}">
+            </div>
+            <div class="form-group">
+                <label class="chat-label">Quick topics</label>
+                <div class="chat-topics">
+                    <button type="button" class="chat-topic-btn" data-topic="Resume review">Resume review</button>
+                    <button type="button" class="chat-topic-btn" data-topic="Job search strategy">Job search</button>
+                    <button type="button" class="chat-topic-btn" data-topic="Interview preparation">Interview prep</button>
+                    <button type="button" class="chat-topic-btn" data-topic="Career transition">Career transition</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="chat-label" for="message">Your message *</label>
+                <textarea id="message" name="message" required class="chat-input chat-textarea" placeholder="Describe your question or what you'd like help with...">{{ request.form.get('message', '') }}</textarea>
+            </div>
+            <button type="submit" class="chat-btn relative" id="submit-btn"><span class="btn-text">Send Message</span></button>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    document.querySelectorAll('.chat-topic-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById('topic').value = btn.dataset.topic;
+        });
+    });
+    var form = document.querySelector('form');
+    var submitBtn = document.getElementById('submit-btn');
+    if (form && submitBtn) {
+        form.addEventListener('submit', function () {
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+        });
+    }
+})();
+</script>
+{% endblock %}

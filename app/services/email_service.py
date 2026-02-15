@@ -3,6 +3,7 @@ Central SendGrid email service for transactional emails.
 """
 from __future__ import annotations
 
+import html
 from typing import Tuple
 
 from flask import current_app
@@ -155,6 +156,53 @@ def send_password_reset_email(to_email: str, reset_link: str) -> Tuple[bool, str
         text_body=text,
         html_body=html,
         category="password_reset",
+    )
+
+
+def send_interview_booking_to_team(
+    *,
+    user_name: str,
+    user_email: str,
+    company: str,
+    job_role: str,
+    preferred_date: str,
+    preferred_time: str,
+    phone: str,
+    notes: str = "",
+) -> Tuple[bool, str]:
+    """Send interview booking request to team@resumeghana.com via SendGrid."""
+    subject = f"New Interview Booking: {job_role} — {user_name}"
+    text = (
+        f"A new interview booking request has been submitted.\n\n"
+        f"User: {user_name} <{user_email}>\n"
+        f"Company/Job: {company}\n"
+        f"Role Applying For: {job_role}\n"
+        f"Preferred Date: {preferred_date}\n"
+        f"Preferred Time: {preferred_time}\n"
+        f"Phone: {phone}\n"
+    )
+    if notes:
+        text += f"\nNotes:\n{notes}\n"
+
+    html_content = (
+        "<p><strong>New interview booking request</strong></p>"
+        f"<p><strong>User:</strong> {html.escape(user_name)} &lt;<a href='mailto:{html.escape(user_email)}'>{html.escape(user_email)}</a>&gt;</p>"
+        f"<p><strong>Company/Job:</strong> {html.escape(company)}</p>"
+        f"<p><strong>Role Applying For:</strong> {html.escape(job_role)}</p>"
+        f"<p><strong>Preferred Date:</strong> {html.escape(preferred_date)}<br>"
+        f"<strong>Preferred Time:</strong> {html.escape(preferred_time)}</p>"
+        f"<p><strong>Phone:</strong> <a href='tel:{html.escape(phone)}'>{html.escape(phone)}</a></p>"
+    )
+    if notes:
+        safe_notes = html.escape(notes).replace("\n", "<br>")
+        html_content += f"<p><strong>Notes:</strong><br>{safe_notes}</p>"
+
+    return send_transactional_email(
+        to_email="team@resumeghana.com",
+        subject=subject,
+        text_body=text,
+        html_body=html_content,
+        category="interview_booking",
     )
 
 

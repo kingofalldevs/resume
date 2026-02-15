@@ -1,45 +1,116 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<style>
+    .dash-welcome { font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; }
+    .dash-sub { color: #6b7280; font-size: 0.95rem; }
+    .dash-stat { background: white; border-radius: 16px; padding: 1.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: box-shadow 0.2s; }
+    .dash-stat:hover { box-shadow: 0 4px 12px rgba(255, 102, 0, 0.08); }
+    .dash-stat-label { color: #6b7280; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .dash-stat-value { font-size: 1.875rem; font-weight: 800; color: #ff6600; }
+    .dash-action-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.75rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+    .dash-action-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(255, 102, 0, 0.12);
+        border-color: rgba(255, 102, 0, 0.25);
+        color: inherit;
+    }
+    .dash-action-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+    .dash-action-icon.create { background: rgba(255, 102, 0, 0.12); color: #ff6600; }
+    .dash-action-icon.book { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+    .dash-action-icon.chat { background: rgba(99, 102, 241, 0.12); color: #6366f1; }
+    .dash-action-title { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.35rem; color: #111827; }
+    .dash-action-desc { font-size: 0.875rem; color: #6b7280; line-height: 1.45; }
+    .dash-resume-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+    }
+    .dash-resume-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .dash-resume-meta { font-size: 0.8125rem; color: #6b7280; margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold">Dashboard</h1>
-    <a href="{{ url_for('resume.builder') }}" class="bg-[#ff6600] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">+ Create New Resume</a>
+<div class="mb-8">
+    <h1 class="dash-welcome">Welcome back, {{ ((current_user.full_name or '').strip().split() or ['there'])[0] }}!</h1>
+    <p class="dash-sub">Manage your resumes and get career support.</p>
 </div>
 
-<!-- Stats -->
-<div class="grid md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-        <h3 class="text-gray-600 text-sm font-medium mb-1">Total Resumes</h3>
-        <p class="text-3xl font-bold text-[#ff6600]">{{ resumes|length }}</p>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+    <div class="dash-stat">
+        <p class="dash-stat-label">Total Resumes</p>
+        <p class="dash-stat-value">{{ resumes|length }}</p>
     </div>
-    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-        <h3 class="text-gray-600 text-sm font-medium mb-1">AI Tokens Used</h3>
-        <p class="text-3xl font-bold text-[#ff6600]">{{ total_tokens }}</p>
+    <div class="dash-stat">
+        <p class="dash-stat-label">AI Tokens Used</p>
+        <p class="dash-stat-value">{{ total_tokens }}</p>
     </div>
 </div>
 
-<!-- Resume Cards -->
+<!-- Quick Actions -->
+<div class="mb-10">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="{{ url_for('resume.builder') }}" class="dash-action-card" data-show-loading>
+            <div class="dash-action-icon create"><i class="fas fa-plus"></i></div>
+            <h3 class="dash-action-title">Create New Resume</h3>
+            <p class="dash-action-desc">Build a professional resume with AI-powered suggestions and premium templates.</p>
+        </a>
+        <a href="{{ url_for('dashboard.book_interview') }}" class="dash-action-card">
+            <div class="dash-action-icon book"><i class="fas fa-calendar-check"></i></div>
+            <h3 class="dash-action-title">Book an Interview</h3>
+            <p class="dash-action-desc">Schedule a mock interview or consultation with our career experts.</p>
+        </a>
+        <a href="{{ url_for('dashboard.chat_expert') }}" class="dash-action-card">
+            <div class="dash-action-icon chat"><i class="fas fa-comments"></i></div>
+            <h3 class="dash-action-title">Chat with an Expert</h3>
+            <p class="dash-action-desc">Get personalized advice on your resume and career strategy.</p>
+        </a>
+    </div>
+</div>
+
+<!-- Resumes Section -->
 <div>
-    <h2 class="text-xl font-semibold mb-4">Your Resumes</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Your Resumes</h2>
+        <a href="{{ url_for('resume.builder') }}" class="text-sm font-semibold text-[#ff6600] hover:opacity-80 transition" data-show-loading>+ New</a>
+    </div>
+
     {% if resumes %}
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for r in resumes %}
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition">
-            <div class="p-6">
-                <h3 class="font-bold text-lg mb-2">{{ r.title }}</h3>
-                <p class="text-gray-500 text-sm mb-4">Template: {{ r.template_name }} · {{ r.updated_at.strftime('%b %d, %Y') }}</p>
-                <div class="flex gap-2">
-                    <a href="{{ url_for('resume.view', id=r.id) }}" class="text-[#ff6600] hover:opacity-80 font-medium text-sm transition">View</a>
-                    <a href="{{ url_for('resume.download', id=r.id) }}" class="text-[#ff6600] hover:opacity-80 font-medium text-sm transition">Download</a>
+        <div class="dash-resume-card">
+            <div class="p-5">
+                <h3 class="font-bold text-lg text-gray-900 mb-1">{{ r.title }}</h3>
+                <p class="dash-resume-meta">Template: {{ r.template_name.replace('_', ' ')|title }} · {{ r.updated_at.strftime('%b %d, %Y') }}</p>
+                <div class="flex gap-4">
+                    <a href="{{ url_for('resume.view', id=r.id) }}" class="text-[#ff6600] hover:opacity-80 font-medium text-sm transition flex items-center gap-1"><i class="fas fa-eye text-xs"></i> View</a>
+                    <a href="{{ url_for('resume.download', id=r.id) }}" class="text-[#ff6600] hover:opacity-80 font-medium text-sm transition flex items-center gap-1"><i class="fas fa-download text-xs"></i> Download</a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <div class="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
-        <p class="text-gray-500 mb-4">No resumes yet. Create your first one!</p>
-        <a href="{{ url_for('resume.builder') }}" class="inline-block bg-[#ff6600] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">Create Resume</a>
+    <div class="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+        <div class="text-4xl text-gray-300 mb-4"><i class="fas fa-file-alt"></i></div>
+        <p class="text-gray-500 mb-4">No resumes yet. Create your first one to get started!</p>
+        <a href="{{ url_for('resume.builder') }}" class="inline-block bg-[#ff6600] text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition" data-show-loading>Create Resume</a>
     </div>
     {% endif %}
 </div>
