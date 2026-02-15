@@ -33,7 +33,10 @@ class Config:
 
     # SendGrid login OTP
     SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
-    SENDGRID_FROM_EMAIL = os.environ.get("SENDGRID_FROM_EMAIL", "")
+    SENDGRID_FROM_EMAIL = os.environ.get("SENDGRID_FROM_EMAIL", "team@resumeghana.com")
+    SENDGRID_FROM_NAME = os.environ.get("SENDGRID_FROM_NAME", "ResumeGhana")
+    SENDGRID_REPLY_TO = os.environ.get("SENDGRID_REPLY_TO", "team@resumeghana.com")
+    EMAIL_LIST_UNSUBSCRIBE_URL = os.environ.get("EMAIL_LIST_UNSUBSCRIBE_URL", "")
     LOGIN_OTP_EXP_MINUTES = int(os.environ.get("LOGIN_OTP_EXP_MINUTES", "10"))
     LOGIN_OTP_MAX_ATTEMPTS = int(os.environ.get("LOGIN_OTP_MAX_ATTEMPTS", "5"))
 

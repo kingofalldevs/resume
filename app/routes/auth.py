@@ -11,6 +11,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models import User
+from app.services.email_service import send_login_otp_email, send_signup_confirmation_email
 from app.utils import hash_password, verify_password
 
 auth_bp = Blueprint("auth", __name__)
@@ -48,36 +49,6 @@ def _otp_hash(email: str, otp: str) -> str:
     secret = current_app.config.get("SECRET_KEY", "")
     payload = f"{email}|{otp}".encode("utf-8")
     return hashlib.sha256(secret.encode("utf-8") + b":" + payload).hexdigest()
-
-
-def _send_login_otp(email: str, otp: str) -> tuple[bool, str]:
-    api_key = (current_app.config.get("SENDGRID_API_KEY", "") or "").strip()
-    sender = (current_app.config.get("SENDGRID_FROM_EMAIL", "") or "").strip()
-    if not api_key or not sender:
-        return False, "OTP email service is not configured. Set SENDGRID_API_KEY and SENDGRID_FROM_EMAIL."
-
-    try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-    except Exception:
-        return False, "SendGrid SDK is not installed. Add `sendgrid` to requirements."
-
-    subject = "Your ResumeGhana login verification code"
-    body = (
-        "Use the following one-time code to complete your login:\n\n"
-        f"{otp}\n\n"
-        f"This code expires in {int(_otp_expiry_seconds() / 60)} minutes.\n"
-        "If you did not request this, ignore this message."
-    )
-    message = Mail(from_email=sender, to_emails=email, subject=subject, plain_text_content=body)
-    try:
-        sg = SendGridAPIClient(api_key)
-        resp = sg.send(message)
-        if int(resp.status_code) >= 400:
-            return False, f"OTP email failed ({resp.status_code})."
-        return True, ""
-    except Exception as exc:
-        return False, f"Failed to send OTP email: {exc}"
 
 
 def _mask_email(email: str) -> str:
@@ -202,7 +173,7 @@ def signup():
             return redirect(url_for("auth.verify_otp"))
 
         otp = f"{secrets.randbelow(1000000):06d}"
-        ok, err = _send_login_otp(user.email, otp)
+        ok, err = send_login_otp_email(user.email, otp, int(_otp_expiry_seconds() / 60))
         if not ok:
             # If verification email fails, remove the just-created account
             # so unverified users are not left in a confusing state.
@@ -223,6 +194,7 @@ def signup():
             "attempts_left": _otp_max_attempts(),
             "remember": True,
             "next_url": url_for("dashboard.index"),
+            "source": "signup",
         }
         flash("Account created. We sent a verification code to your email.", "info")
         return redirect(url_for("auth.verify_otp"))
@@ -269,7 +241,7 @@ def login():
                 return redirect(url_for("auth.verify_otp"))
 
             otp = f"{secrets.randbelow(1000000):06d}"
-            ok, err = _send_login_otp(user.email, otp)
+            ok, err = send_login_otp_email(user.email, otp, int(_otp_expiry_seconds() / 60))
             if not ok:
                 flash(err, "error")
                 return render_template("auth/login.html")
@@ -282,6 +254,7 @@ def login():
                 "attempts_left": _otp_max_attempts(),
                 "remember": remember,
                 "next_url": next_url,
+                "source": "login",
             }
             flash("We sent a verification code to your email. Enter it to complete sign-in.", "info")
             return redirect(url_for("auth.verify_otp"))
@@ -340,6 +313,9 @@ def verify_otp():
         login_user(user, remember=bool(pending.get("remember", False)))
         next_url = pending.get("next_url") or url_for("dashboard.index")
         session.pop("pending_login_otp", None)
+        if pending.get("source") == "signup":
+            # Best-effort welcome/confirmation mail for new verified accounts.
+            send_signup_confirmation_email(user.email, getattr(user, "full_name", ""))
         return redirect(next_url)
 
     return render_template("auth/verify_otp.html", masked_email=_mask_email(pending.get("email", "")))
