@@ -193,7 +193,9 @@
                     <input type="checkbox" name="remember" id="remember" class="rounded border-[#ff6600]/40 text-[#ff6600] focus:ring-[#ff6600]">
                     <label for="remember" class="ml-2 text-sm auth-sub">Remember me</label>
                 </div>
-                <button type="submit" class="auth-btn w-full py-3 rounded-lg font-semibold">Login</button>
+                <button type="submit" class="auth-btn w-full py-3 rounded-lg font-semibold relative" id="login-btn">
+                    <span class="btn-text">Login</span>
+                </button>
             </form>
             <p class="mt-5 text-center auth-sub">
                 Don't have an account?
@@ -209,18 +211,23 @@
     (function () {
         const switchLink = document.querySelector("[data-auth-switch]");
         const authCard = document.getElementById("auth-card");
+        const form = document.querySelector("form");
+        const btn = document.getElementById("login-btn");
 
-        if (!switchLink || !authCard) {
-            return;
+        if (switchLink && authCard) {
+            switchLink.addEventListener("click", function (event) {
+                event.preventDefault();
+                authCard.classList.add("is-transitioning");
+                window.setTimeout(function () { window.location.href = switchLink.href; }, 220);
+            });
         }
 
-        switchLink.addEventListener("click", function (event) {
-            event.preventDefault();
-            authCard.classList.add("is-transitioning");
-            window.setTimeout(function () {
-                window.location.href = switchLink.href;
-            }, 220);
-        });
+        if (form && btn) {
+            form.addEventListener("submit", function () {
+                btn.classList.add("btn-loading");
+                btn.disabled = true;
+            });
+        }
     }());
 </script>
 {% endblock %}

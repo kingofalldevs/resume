@@ -63,11 +63,28 @@
                     placeholder="000000"
                 >
             </div>
-            <button type="submit" class="otp-btn">Verify and Continue</button>
+            <button type="submit" class="otp-btn relative" id="verify-btn">
+                <span class="btn-text">Verify and Continue</span>
+            </button>
         </form>
         <p class="text-center mt-4 text-sm otp-sub">
             Didn’t get the code? Return to <a href="{{ url_for('auth.login') }}" class="font-bold text-[#ff6600]">Login</a> and try again.
         </p>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const form = document.querySelector("form");
+        const btn = document.getElementById("verify-btn");
+        if (form && btn) {
+            form.addEventListener("submit", function () {
+                btn.classList.add("btn-loading");
+                btn.disabled = true;
+            });
+        }
+    }());
+</script>
 {% endblock %}

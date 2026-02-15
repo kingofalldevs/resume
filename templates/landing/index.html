@@ -323,14 +323,14 @@
             <div class="hero-content">
                 <span class="hero-badge mb-4"><i class="fas fa-bolt"></i> Resume Builder</span>
                 <h1 class="section-title text-3xl sm:text-6xl font-black leading-tight mt-4 mb-5">
-                    The Best Online Resume Builder
+                    The Best Online Resume Builder In Ghana 
                 </h1>
                 <p class="text-base sm:text-2xl text-soft max-w-2xl mb-8">
                     Easily create a resume from any device with a modern, elegant workflow and smart AI guidance.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 mb-8">
                     <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
-                       class="primary-btn rounded-xl px-7 py-3 font-bold text-center transition">
+                       class="primary-btn rounded-xl px-7 py-3 font-bold text-center transition" data-show-loading>
                         Create My Resume Now
                     </a>
                     <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('dashboard.index') }}"
@@ -396,11 +396,11 @@
                 <p class="text-soft text-sm">We are here to help you every step of the way.</p>
             </article>
             <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="ATS resume score analytics" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="card-media" src="{{ url_for('static', filename='demo.jpg') }}" alt="ATS resume score analytics" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-file-circle-check"></i></div>
-                <h3 class="text-xl font-bold mb-2">ATS-First Structure</h3>
-                <p class="text-soft">Keeps formatting readable for both hiring managers and automated tracking systems.</p>
-                <p class="text-soft text-sm">Improves compatibility with applicant tracking filters so your profile is not missed.</p>
+                <h3 class="text-xl font-bold mb-2">Get Demo Interview Before Your Actual Interview</h3>
+                <p class="text-soft">Get a feel of the interview process and how to answer the questions.</p>
+                <p class="text-soft text-sm">Prepare for your actual interview with confidence.</p>
             </article>
         </div>
     </section>
@@ -412,34 +412,34 @@
                 <p class="text-soft">Fast flow, zero confusion. Build from any device.</p>
             </div>
             <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
-               class="text-[#ff6600] font-semibold hover:opacity-80 transition">
+               class="text-[#ff6600] font-semibold hover:opacity-80 transition" data-show-loading>
                 Launch builder <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-career.svg') }}" alt="Sign up workflow for resume builder" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Sign up workflow for resume builder" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">01</p>
                 <h3 class="font-bold text-lg mb-2">Create account</h3>
                 <p class="text-sm text-soft">Start quickly with simple sign up and instant access to the builder.</p>
                 <p class="text-soft text-sm">Your projects save automatically so you can continue editing from any device.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="Adding work achievements into resume form" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="Adding work achievements into resume form" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">02</p>
                 <h3 class="font-bold text-lg mb-2">Add your story</h3>
                 <p class="text-sm text-soft">Input your achievements and let AI sharpen impact and clarity.</p>
                 <p class="text-soft text-sm">Smart prompts help you turn duties into measurable achievements recruiters notice.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-layout.svg') }}" alt="Choosing a resume template style" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="card-media" src="{{ url_for('static', filename='hero-visual.svg') }}" alt="Choosing a resume template style" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">03</p>
                 <h3 class="font-bold text-lg mb-2">Select template</h3>
                 <p class="text-sm text-soft">Pick from polished formats tailored to your target role.</p>
                 <p class="text-soft text-sm">Preview each style instantly and switch anytime without losing your content.</p>
             </article>
             <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="Download and apply to jobs workflow" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="card-media" src="{{ url_for('static', filename='apply.jpg') }}" alt="Download and apply to jobs workflow" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
                 <p class="text-[#ff6600] font-black text-xl mb-2">04</p>
                 <h3 class="font-bold text-lg mb-2">Export and apply</h3>
                 <p class="text-sm text-soft">Download and apply confidently with an ATS-friendly resume.</p>
@@ -481,7 +481,7 @@
             <h2 class="section-title text-2xl sm:text-4xl font-black mb-4">Ready to design your next career move?</h2>
             <p class="text-soft max-w-2xl mx-auto mb-8">Create a standout resume with modern layout quality and practical AI support built for real hiring outcomes.</p>
             <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
-               class="primary-btn inline-block rounded-xl px-8 py-3 font-bold transition">
+               class="primary-btn inline-block rounded-xl px-8 py-3 font-bold transition" data-show-loading>
                 Create Resume Now
             </a>
         </div>

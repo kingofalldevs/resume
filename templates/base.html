@@ -14,6 +14,10 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-[#e5e5e5] text-gray-900 min-h-screen flex flex-col">
+    <div id="page-load-overlay" class="page-load-overlay" aria-hidden="false">
+        <div class="page-load-spinner"></div>
+        <span class="page-load-text">Loading...</span>
+    </div>
     <nav class="bg-white text-[#ff6600] shadow-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
             <a href="{{ url_for('landing.index') }}" class="text-lg sm:text-xl font-bold text-[#ff6600]">ResumeGhana</a>
@@ -22,7 +26,7 @@
             </button>
             <div id="nav-links" class="hidden md:flex items-center gap-4 lg:gap-6 flex-col md:flex-row md:static absolute top-full left-0 right-0 bg-white md:bg-transparent p-4 md:p-0 gap-3 shadow-lg md:shadow-none border-t border-[#ff6600]/20 md:border-0">
                 <a href="{{ url_for('landing.index') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Home</a>
-                <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.login', next=url_for('resume.builder')) }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Create Resume</a>
+                <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.login', next=url_for('resume.builder')) }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0" data-show-loading>Create Resume</a>
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard.index') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Dashboard</a>
                     <a href="{{ url_for('auth.logout') }}" class="text-[#ff6600] hover:text-[#ff6600]/80 transition py-2 md:py-0">Logout</a>
@@ -59,7 +63,7 @@
                     <h4 class="text-[#ff6600] font-semibold mb-4">Quick Links</h4>
                     <ul class="space-y-2">
                         <li><a href="{{ url_for('landing.index') }}" class="hover:text-[#ff6600] transition">Home</a></li>
-                        <li><a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.login') }}" class="hover:text-[#ff6600] transition">Create Resume</a></li>
+                        <li><a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.login') }}" class="hover:text-[#ff6600] transition" data-show-loading>Create Resume</a></li>
                     </ul>
                 </div>
                 <div>
@@ -76,5 +80,29 @@
         </div>
     </footer>
     {% block extra_js %}{% endblock %}
+    <script>
+        (function () {
+            var overlay = document.getElementById("page-load-overlay");
+            if (!overlay) return;
+
+            function hideOverlay() {
+                overlay.classList.add("hidden");
+                overlay.setAttribute("aria-hidden", "true");
+            }
+
+            if (document.readyState === "complete") {
+                setTimeout(hideOverlay, 150);
+            } else {
+                window.addEventListener("load", function () { setTimeout(hideOverlay, 200); });
+            }
+
+            document.querySelectorAll('a[data-show-loading]').forEach(function (a) {
+                a.addEventListener("click", function () {
+                    overlay.classList.remove("hidden");
+                    overlay.setAttribute("aria-hidden", "false");
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

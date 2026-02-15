@@ -176,7 +176,9 @@
                     <label class="block text-sm font-semibold text-[#ff6600] mb-1">Password (min 8 characters)</label>
                     <input type="password" name="password" required minlength="8" class="auth-input w-full px-4 py-3 rounded-lg" placeholder="••••••••">
                 </div>
-                <button type="submit" class="auth-btn w-full py-3 rounded-lg font-semibold">Sign Up</button>
+                <button type="submit" class="auth-btn w-full py-3 rounded-lg font-semibold relative" id="signup-btn">
+                    <span class="btn-text">Sign Up</span>
+                </button>
             </form>
             <p class="mt-5 text-center auth-sub">
                 Already have an account?
@@ -211,18 +213,23 @@
     (function () {
         const switchLink = document.querySelector("[data-auth-switch]");
         const authCard = document.getElementById("auth-card");
+        const form = document.querySelector("form");
+        const btn = document.getElementById("signup-btn");
 
-        if (!switchLink || !authCard) {
-            return;
+        if (switchLink && authCard) {
+            switchLink.addEventListener("click", function (event) {
+                event.preventDefault();
+                authCard.classList.add("is-transitioning");
+                window.setTimeout(function () { window.location.href = switchLink.href; }, 220);
+            });
         }
 
-        switchLink.addEventListener("click", function (event) {
-            event.preventDefault();
-            authCard.classList.add("is-transitioning");
-            window.setTimeout(function () {
-                window.location.href = switchLink.href;
-            }, 220);
-        });
+        if (form && btn) {
+            form.addEventListener("submit", function () {
+                btn.classList.add("btn-loading");
+                btn.disabled = true;
+            });
+        }
     }());
 </script>
 {% endblock %}
