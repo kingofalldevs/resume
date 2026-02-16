@@ -206,6 +206,42 @@ def send_interview_booking_to_team(
     )
 
 
+def send_expert_talk_to_team(
+    *,
+    user_name: str,
+    user_email: str,
+    topic: str,
+    message: str,
+) -> Tuple[bool, str]:
+    """Send expert-talk request to team@resumeghana.com via SendGrid."""
+    topic_text = topic or "General career guidance"
+    subject = f"New Expert Talk Request: {topic_text} - {user_name}"
+    text = (
+        "A new expert-talk request has been submitted.\n\n"
+        f"User: {user_name} <{user_email}>\n"
+        f"Topic: {topic_text}\n\n"
+        "Message:\n"
+        f"{message}\n"
+    )
+
+    safe_topic = html.escape(topic_text)
+    safe_message = html.escape(message).replace("\n", "<br>")
+    html_content = (
+        "<p><strong>New expert-talk request</strong></p>"
+        f"<p><strong>User:</strong> {html.escape(user_name)} &lt;<a href='mailto:{html.escape(user_email)}'>{html.escape(user_email)}</a>&gt;</p>"
+        f"<p><strong>Topic:</strong> {safe_topic}</p>"
+        f"<p><strong>Message:</strong><br>{safe_message}</p>"
+    )
+
+    return send_transactional_email(
+        to_email="team@resumeghana.com",
+        subject=subject,
+        text_body=text,
+        html_body=html_content,
+        category="expert_talk",
+    )
+
+
 def send_interview_notification_email(to_email: str, role: str, when_text: str, details: str = "") -> Tuple[bool, str]:
     subject = f"Interview update: {role}"
     text = (

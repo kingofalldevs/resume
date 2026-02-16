@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models import Resume, AIUsage
-from app.services.email_service import send_interview_booking_to_team
+from app.services.email_service import send_interview_booking_to_team, send_expert_talk_to_team
 from sqlalchemy import func
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -80,7 +80,16 @@ def chat_expert():
             flash("Please enter your question or message.", "error")
             return render_template("dashboard/chat_expert.html")
 
-        # In production, store in DB, send to support, or connect to live chat
+        ok, err = send_expert_talk_to_team(
+            user_name=current_user.full_name or "User",
+            user_email=current_user.email,
+            topic=topic,
+            message=message,
+        )
+        if not ok:
+            flash(f"Could not send your message: {err}. Please try again or contact us directly.", "error")
+            return render_template("dashboard/chat_expert.html")
+
         flash(
             "Your message has been sent! A career expert will respond within 24 hours.",
             "success",
