@@ -1,77 +1,79 @@
 <div class="resume-container" role="document" aria-label="Resume preview">
 <style>
-.resume-container { max-width: 860px; margin: 0 auto; font-family: "Inter", "Segoe UI", sans-serif; color: #16303f; background: #ffffff; border: 1px solid #cfe3eb; border-radius: 14px; overflow: hidden; }
-.header { background: linear-gradient(90deg, #0f8598 0%, #0a6f86 100%); color: #fff; padding: 20px 24px; }
-.name { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.06; }
-.role { margin-top: 6px; font-size: 14px; opacity: .95; font-weight: 500; }
-.contact { margin-top: 10px; font-size: 12px; opacity: .95; line-height: 1.45; }
-.body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 18px 22px 22px; background: radial-gradient(circle at 90% 92%, rgba(15,133,152,.08), rgba(15,133,152,0) 28%); }
-.block { background: #f9fcfd; border: 1px solid #d8ebf1; border-radius: 10px; padding: 12px 14px; }
-.block.wide { grid-column: 1 / -1; }
-.resume-container h2 { margin: 0 0 8px; font-size: 12px; color: #0f8598; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+.resume-container { max-width: 860px; margin: 0 auto; font-family: "Inter", "Segoe UI", sans-serif; color: #1f2937; background: #ffffff; border: 1px solid #ffd8bf; border-radius: 14px; overflow: hidden; }
+.layout { display: grid; grid-template-columns: 250px 1fr; min-height: 980px; }
+.sidebar { background: linear-gradient(180deg, #ff6600 0%, #ea580c 100%); color: #fff; padding: 24px 18px; }
+.main { padding: 24px 24px; background: #fffaf5; }
+.name { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.05; }
+.role { margin-top: 6px; font-size: 14px; font-weight: 600; opacity: .95; }
+.contact { margin-top: 12px; font-size: 12px; line-height: 1.5; opacity: .95; }
+.side-title { margin: 16px 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 800; }
+.side-content p { margin: 0; font-size: 12px; line-height: 1.5; }
+.resume-container h2 { margin: 0 0 8px; font-size: 12px; color: #ea580c; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; border-bottom: 1px solid #ffedd5; padding-bottom: 6px; }
+h3 { margin: 0 0 2px; font-size: 14px; color: #111827; }
+.meta { margin: 0; font-size: 12px; color: #64748b; }
+.section { background: #fff; border: 1px solid #ffe5d2; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
 .resume-container p { margin: 0; font-size: 13px; line-height: 1.55; }
 .resume-container ul { margin: 6px 0 0 18px; padding: 0; }
 .resume-container li { margin-bottom: 6px; font-size: 13px; line-height: 1.5; color: #1b3f52; }
-.resume-container .skill-tag { display: inline-block; background: #e6f5f8; border: 1px solid #c7e7ee; color: #0b7387; border-radius: 999px; padding: 4px 9px; margin: 3px 4px 3px 0; font-size: 11px; font-weight: 600; }
-.career { background: #eaf7fa; border-left: 4px solid #0f8598; border-radius: 8px; padding: 10px 12px; }
+.career { background: #fff7ed; border-left: 4px solid #ff6600; border-radius: 8px; padding: 10px 12px; }
 @media (max-width: 760px) {
-  .header { padding: 18px; }
-  .body { grid-template-columns: 1fr; padding: 16px; }
-  .block.wide { grid-column: auto; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { padding: 18px; }
+  .main { padding: 16px; }
 }
 </style>
-<header class="header">
-  <h1 class="name">{{ full_name }}</h1>
-  {% if role %}<div class="role">{{ role }}</div>{% endif %}
-  <div class="contact">
-    {% if email %}{{ email }}{% endif %}
-    {% if phone %} | {{ phone }}{% endif %}
-    {% if country %} | {{ country }}{% endif %}
-    {% if links %}<br>{{ links }}{% endif %}
-  </div>
-</header>
+<div class="layout">
+  <aside class="sidebar">
+    {% if full_name %}<h1 class="name">{{ full_name }}</h1>{% endif %}
+    {% if role %}<div class="role">{{ role }}</div>{% endif %}
+    {% if contact_line %}<div class="contact">{{ contact_line }}</div>{% endif %}
 
-<section class="body">
+    {% if skills %}
+    <div class="side-title">Skills Snapshot</div>
+    <div class="side-content">{{ skills | safe }}</div>
+    {% endif %}
+    {% if education %}
+    <div class="side-title">Education</div>
+    <div class="side-content">{{ education | safe }}</div>
+    {% endif %}
+  </aside>
+
+  <main class="main">
   {% if summary %}
-  <article class="block wide">
+  <article class="section">
     <h2>Professional Summary</h2>
     <p>{{ summary }}</p>
   </article>
   {% endif %}
 
   {% if experience %}
-  <article class="block wide">
-    <h2>Experience</h2>
+  <article class="section">
+    <h2>Work Experience</h2>
     <div>{{ experience | safe }}</div>
   </article>
   {% endif %}
 
-  {% if skills %}
-  <article class="block">
-    <h2>Skills</h2>
-    <div>{{ skills | safe }}</div>
-  </article>
-  {% endif %}
-
-  {% if education %}
-  <article class="block">
-    <h2>Education</h2>
-    <div>{{ education | safe }}</div>
+  {% if projects %}
+  <article class="section">
+    <h2>Projects</h2>
+    <div>{{ projects | safe }}</div>
   </article>
   {% endif %}
 
   {% if certifications %}
-  <article class="block">
+  <article class="section">
     <h2>Certifications</h2>
-    <p>{{ certifications }}</p>
+    <div>{{ certifications | safe }}</div>
   </article>
   {% endif %}
 
   {% if career_value %}
-  <article class="block">
-    <h2>Career Objective & Value</h2>
+  <article class="section">
+    <h2>Career Objective</h2>
     <div class="career">{{ career_value }}</div>
   </article>
   {% endif %}
-</section>
+  </main>
+</div>
 </div>

@@ -63,52 +63,42 @@ Add Impact Without Fabrication:
 - Feels clearly worth paying for.
 """
 
-RESUME_GENERATION_PROMPT = """You are a world-class resume designer and ATS optimization expert.
+RESUME_GENERATION_PROMPT = """You are an expert AI professional resume writer. Generate a full, clean, ATS-friendly resume based on the user's input.
 
-You will receive **clean, validated resume data in JSON format**.
-Your task is to generate a **premium, high-end HTML resume** that looks like a paid product.
+IMPORTANT:
 
-### DESIGN & STYLING RULES
-- **Layout**: Use a clean, modern layout. Use a <div> wrapper with a max-width of 800px (for screen) but responsive.
-- **Typography**: Use a font stack like 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif.
-- **Colors**: Use a restrained palette.
-  - Text: #1a1a1a (Dark Gray)
-  - Accent: #2c3e50 (Navy) or #2563eb (Royal Blue) for headers/names.
-  - Secondary: #64748b (Slate Gray) for dates/locations.
-- **Spacing**: Use ample whitespace. 1.5 line height for body. Distinct margins between sections.
-- **Photo**:
-  - If `include_photo_placeholder` is true, place the photo in the header (top-left or top-right).
-  - Style: width: 110px; height: 110px; object-fit: cover; border-radius: 8px; (Soft rounded rectangle).
-  - If no photo, the layout must flow naturally without gaps.
-- **Structure**:
-  - **Header**: Name (Large, Bold), Contact Info (Clean row or stacked), Photo (if applicable).
-  - **Sections**: Clear <h2> headers with a subtle bottom border or accent color.
-  - **Experience**: Role (Bold), Company (Semi-bold), Date (Right-aligned or distinct color). Bullets (Clean <ul>).
-  - **Skills**: Clean tags/pills or a comma-separated list with clear labels.
+1. Ignore any missing or empty fields.
+- Do NOT display placeholders like "Not provided", "Optional", or blank values.
+- Only show sections and entries that have real content.
 
-### CONTENT INSTRUCTIONS
-1. **Header**: Name, Email, Phone, Location.
-   - **Links**: If `links` are provided (e.g., LinkedIn, Portfolio), display them clearly in the header.
-   - *Photo Logic*: If `include_photo_placeholder` is true, you MUST insert exactly this tag: `<img src="PHOTO_PLACEHOLDER" alt="Profile Photo" class="profile-photo">`.
-2. **Summary**: Professional summary text.
-3. **Experience**: Loop through roles.
-   - Format: Role | Company | Date
-   - Bullets: Strong action verbs.
-4. **Skills**: Technical and Soft skills. (MUST appear before Education).
-5. **Education**: Degree, School, Year.
-   - Include `relevant_coursework` if present.
-6. **Optional Sections**: 
-   - **Certifications**: List clearly (Name, Issuer, Date).
-   - Projects, Languages (if provided).
+2. Structure of the resume:
+- Header: Full Name, Phone, Email, Location, LinkedIn/Portfolio/GitHub (only if provided)
+- Professional Summary: 3-4 lines describing role, years of experience, key strengths, and value proposition
+- Skills: Categorized (Technical, Soft Skills, Tools, Languages)
+  - Each skill should include: skill name, proficiency (optional), and context/description
+  - Do NOT display empty categories
+- Work Experience: Reverse chronological
+  - Job Title, Company, Location, Dates
+  - Bullet points with action verbs and measurable results
+  - Skip bullets or jobs with no information
+- Education: Degree, Institution, Location, Years, GPA/Honors (only if provided)
+- Projects: Project name, description, technologies, achievements (skip if empty)
+- Certifications: Name, Issuer, Year (skip any missing data)
+- Career Objective: Include only if provided
 
-### OUTPUT FORMAT
-Return **ONLY** the HTML code inside a main container `div`.
-Include a `<style>` block at the start of the div to define the premium styles.
-Do NOT use `<html>`, `<head>`, or `<body>` tags.
-Ensure the CSS makes it look like a "paid" resume (clean, crisp, professional).
+3. Formatting rules:
+- ATS-friendly, professional language, and clean visual hierarchy
+- Keep each template readable and uncluttered
+- Skills must be contextual, not just tags
+- Keep length within 1-2 pages
+- Use strong, measurable action verbs for achievements
 
-### DATA SOURCE
-Use the provided JSON data. Do not invent facts.
+4. Output:
+- Generate 3-5 distinct resume templates in HTML format
+- Each template must have a unique style and include a template name plus a short style description
+- Use orange/white brand accents where appropriate
+- Keep output copyable and PDF-ready
+- No placeholder text, no AI disclaimers, only real content
 """
 
 RESUME_WIZARD_PROMPT = """You are a professional AI resume assistant and content enhancer. Your task is to guide the user through a **four-step resume creation process** and provide smart suggestions at each step, including keyword recommendations, industry-specific phrasing, and impact-oriented bullets. 

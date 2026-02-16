@@ -404,8 +404,6 @@ def checkout_callback():
         flash("Session expired after payment. Please rebuild your resume.", "error")
         return redirect(url_for("resume.builder"))
 
-    template_name = resume_data.get("template_name", "modern_minimal")
-    html = build_resume_html(resume_data, template_name)
     session.pop("pending_payment", None)
     resume = _save_resume_record(resume_data, current_user.id)
 
@@ -413,9 +411,10 @@ def checkout_callback():
         flash("Payment successful. Resume saved to dashboard.", "success")
         return redirect(url_for("resume.view", id=resume.id))
 
-    # action == "download": return downloadable html file (and keep a saved copy)
+    # action == "download": return downloadable HTML resume (and keep a saved copy)
     filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
     filename = f"{filename_base}_resume.html"
+    html = build_resume_html(resume_data, template_name)
     response = make_response(html)
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
@@ -459,7 +458,13 @@ def download(id):
     resume = Resume.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     data = _resume_to_data(resume)
     html = build_resume_html(data, resume.template_name)
-    return render_template("tailored.html", content=html)
+    filename_base = (data.get("name") or "resume").strip().replace(" ", "_")
+    filename = f"{filename_base}_resume.html"
+    response = make_response(html)
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    response.headers["X-Resume-Id"] = str(resume.id)
+    return response
 
 
 # Legacy route for PDF upload from landing

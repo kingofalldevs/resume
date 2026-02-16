@@ -1,76 +1,35 @@
 <div class="resume-container" role="document" aria-label="Resume preview">
 <style>
-.resume-container { max-width: 860px; margin: 0 auto; font-family: "Inter", "Segoe UI", sans-serif; color: #102335; background: #f4f8fb; border: 1px solid #d7e3ef; border-radius: 14px; overflow: hidden; }
-.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 980px; }
-.sidebar { background: linear-gradient(180deg, #0b6db8 0%, #0d5fa0 100%); color: #fff; padding: 28px 20px; }
-.main { background: #ffffff; padding: 28px 30px; }
-.name { font-size: 28px; font-weight: 800; margin: 0; line-height: 1.1; }
-.role { font-size: 14px; opacity: 0.95; margin-top: 6px; margin-bottom: 18px; font-weight: 500; }
-.side-title { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; margin: 18px 0 8px; opacity: .95; }
-.side-text { font-size: 12px; line-height: 1.5; opacity: .95; }
-.skills .skill-tag { display: inline-block; background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.24); border-radius: 999px; padding: 4px 10px; margin: 3px 4px 3px 0; font-size: 11px; }
-.section { margin-bottom: 18px; }
-.resume-container .main h2 { margin: 0 0 8px; color: #0b6db8; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid #dbe8f4; padding-bottom: 6px; }
-.resume-container .main p { font-size: 13px; line-height: 1.55; margin: 0; color: #1b3144; }
-.resume-container .main ul { margin: 6px 0 0 18px; padding: 0; }
-.resume-container .main li { margin-bottom: 6px; color: #21384d; font-size: 13px; line-height: 1.5; }
-.career { background: #edf6ff; border-left: 4px solid #0b6db8; border-radius: 8px; padding: 12px 14px; }
-@media (max-width: 720px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { padding: 20px 18px; }
-  .main { padding: 20px 18px; }
-}
+.resume-container{max-width:860px;margin:0 auto;background:#fff;border:1px solid #ffd8bf;border-radius:14px;padding:28px 30px;
+font-family:"Inter","Segoe UI",sans-serif;color:#1f2937}
+.top{border-bottom:2px solid #ff6600;padding-bottom:12px;margin-bottom:18px}
+.name{margin:0;font-size:32px;font-weight:800;letter-spacing:.2px;color:#ff6600}
+.role{margin-top:6px;font-size:14px;font-weight:600;color:#7c2d12}
+.contact{margin-top:8px;font-size:12px;color:#475569;line-height:1.5}
+.section{margin-bottom:16px}
+h2{margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#ff6600;border-bottom:1px solid #ffe5d2;padding-bottom:6px}
+h3{margin:0 0 2px;font-size:14px;color:#0f172a}
+.meta{margin:0;font-size:12px;color:#64748b}
+p{margin:0;font-size:13px;line-height:1.55}
+ul{margin:6px 0 0 18px;padding:0}
+li{margin-bottom:6px;font-size:13px;line-height:1.5}
+.item{margin-bottom:10px}
+.skill-group{margin-bottom:10px}
+.skill-group ul{margin-top:4px}
+.career{background:#fff7ed;border-left:4px solid #ff6600;border-radius:8px;padding:10px 12px}
+@media (max-width:640px){.resume-container{padding:18px}}
 </style>
-<div class="layout">
-  <aside class="sidebar">
-    <h1 class="name">{{ full_name }}</h1>
-    {% if role %}<div class="role">{{ role }}</div>{% endif %}
+<header class="top">
+  {% if full_name %}<h1 class="name">{{ full_name }}</h1>{% endif %}
+  {% if role %}<div class="role">{{ role }}</div>{% endif %}
+  {% if contact_line %}<div class="contact">{{ contact_line }}</div>{% endif %}
+</header>
 
-    <div class="side-title">Contact</div>
-    <div class="side-text">
-      {% if email %}{{ email }}<br>{% endif %}
-      {% if phone %}{{ phone }}<br>{% endif %}
-      {% if country %}{{ country }}<br>{% endif %}
-      {% if links %}{{ links }}{% endif %}
-    </div>
-
-    <div class="side-title">Skills</div>
-    <div class="skills">{{ skills | safe }}</div>
-
-    {% if certifications %}
-    <div class="side-title">Certifications</div>
-    <div class="side-text">{{ certifications }}</div>
-    {% endif %}
-  </aside>
-
-  <main class="main">
-    {% if summary %}
-    <section class="section">
-      <h2>Professional Summary</h2>
-      <p>{{ summary }}</p>
-    </section>
-    {% endif %}
-
-    {% if experience %}
-    <section class="section">
-      <h2>Experience</h2>
-      <div>{{ experience | safe }}</div>
-    </section>
-    {% endif %}
-
-    {% if education %}
-    <section class="section">
-      <h2>Education</h2>
-      <div>{{ education | safe }}</div>
-    </section>
-    {% endif %}
-
-    {% if career_value %}
-    <section class="section">
-      <h2>Career Objective & Value</h2>
-      <div class="career">{{ career_value }}</div>
-    </section>
-    {% endif %}
-  </main>
-</div>
+{% if summary %}<section class="section"><h2>Professional Summary</h2><p>{{ summary }}</p></section>{% endif %}
+{% if skills %}<section class="section"><h2>Skills</h2><div>{{ skills | safe }}</div></section>{% endif %}
+{% if experience %}<section class="section"><h2>Work Experience</h2><div>{{ experience | safe }}</div></section>{% endif %}
+{% if education %}<section class="section"><h2>Education</h2><div>{{ education | safe }}</div></section>{% endif %}
+{% if projects %}<section class="section"><h2>Projects</h2><div>{{ projects | safe }}</div></section>{% endif %}
+{% if certifications %}<section class="section"><h2>Certifications</h2><div>{{ certifications | safe }}</div></section>{% endif %}
+{% if career_value %}<section class="section"><h2>Career Objective</h2><div class="career">{{ career_value }}</div></section>{% endif %}
 </div>
