@@ -3,483 +3,392 @@
 {% block extra_css %}
 <style>
     body {
-        background: #e5e5e5;
-        color: #ff6600;
-        background-image: linear-gradient(rgba(229, 229, 229, 0.92), rgba(229, 229, 229, 0.92)), url("{{ url_for('static', filename='body-bg.svg') }}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+        background: white;
     }
-
-    /* Orange decorative background design layers */
-    .landing-shell {
-        position: relative;
-        isolation: isolate;
-    }
-
-    .landing-shell::before,
-    .landing-shell::after {
-        content: "";
-        position: absolute;
-        pointer-events: none;
-        z-index: -1;
-    }
-
-    .landing-shell::before {
-        inset: -40px -20px auto auto;
-        width: clamp(220px, 36vw, 420px);
-        height: clamp(220px, 36vw, 420px);
-        border-radius: 999px;
-        background:
-            radial-gradient(circle at 30% 30%, rgba(255, 102, 0, 0.18), rgba(255, 102, 0, 0.04) 60%, rgba(255, 102, 0, 0) 72%),
-            repeating-radial-gradient(circle at 50% 50%, rgba(255, 102, 0, 0.07) 0 2px, rgba(255, 102, 0, 0) 2px 14px);
-        filter: blur(0.2px);
-    }
-
-    .landing-shell::after {
-        inset: auto auto -60px -40px;
-        width: clamp(260px, 42vw, 500px);
-        height: clamp(260px, 42vw, 500px);
-        border-radius: 999px;
-        background:
-            radial-gradient(circle at 70% 70%, rgba(255, 102, 0, 0.2), rgba(255, 102, 0, 0.06) 58%, rgba(255, 102, 0, 0) 74%),
-            repeating-linear-gradient(135deg, rgba(255, 102, 0, 0.08) 0 2px, rgba(255, 102, 0, 0) 2px 12px);
-        opacity: 0.95;
-    }
-
-    section.reveal-on-scroll {
-        position: relative;
-        overflow: hidden;
-    }
-
-    section.reveal-on-scroll::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background:
-            radial-gradient(circle at 12% 15%, rgba(255, 102, 0, 0.06), rgba(255, 102, 0, 0) 30%),
-            radial-gradient(circle at 88% 78%, rgba(255, 102, 0, 0.06), rgba(255, 102, 0, 0) 28%);
-        z-index: -1;
-    }
-
-    nav,
-    footer {
-        background: #ffffff !important;
-        box-shadow: none !important;
-    }
-
-    nav a,
-    footer,
-    footer a,
-    nav .text-amber-500,
-    nav .hover\:text-amber-400:hover,
-    footer .text-amber-500,
-    footer .hover\:text-amber-400:hover,
-    footer .text-gray-300,
-    footer .border-gray-700 {
-        color: #ff6600 !important;
-    }
-
-    nav .bg-amber-500 {
-        background-color: #ff6600 !important;
-        color: #ffffff !important;
-    }
-
-    nav .bg-amber-500:hover {
-        background-color: #ff6600 !important;
-        color: #ffffff !important;
-    }
-
-    /* Sign Up button uses bg-[#ff6600]; ensure white text (nav a overrides it) */
-    nav a.bg-\[\#ff6600\] {
-        color: #ffffff !important;
-    }
-
     .landing-shell {
         max-width: 1120px;
         margin: 0 auto;
+        padding-inline: 0.5rem;
     }
-
-    .hero-grid {
-        display: grid;
-        gap: 1.8rem;
-        grid-template-columns: 1fr;
-        align-items: center;
+    main.flex-1 {
+        padding-top: 0.6rem !important;
     }
-
-    .hero-visual-wrap,
-    .hero-card,
-    .feature-card,
-    .step-card,
-    .template-card,
-    .metric-card {
-        border: none;
-        background: #ffffff;
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .feature-card,
-    .step-card,
-    .template-card {
-        min-height: 360px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        gap: 0.75rem;
-    }
-
-    .card-media {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 12px;
-        background: #f9f9f9;
-        aspect-ratio: 16 / 9;
-        transition: transform 0.4s ease, opacity 0.35s ease;
-    }
-
-    .hero-visual-wrap {
-        border-radius: 24px;
-        padding: 1rem;
-    }
-
-    .hero-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-    }
-
-    .hero-image {
-        width: 100%;
-        border-radius: 14px;
-        display: block;
-        border: none;
-    }
-
-    .feature-card:hover,
-    .step-card:hover,
-    .template-card:hover {
-        box-shadow: 0 12px 24px rgba(255, 102, 0, 0.16);
-        transform: translateY(-4px);
-    }
-
-    .feature-card:hover .card-media,
-    .step-card:hover .card-media,
-    .template-card:hover .card-media {
-        transform: scale(1.02);
-    }
-
-    .primary-btn {
-        background: #ff6600;
-        color: #ffffff;
-        border: none;
-    }
-
-    .primary-btn:hover {
-        background: #ffffff;
-        color: #ff6600;
-    }
-
-    .secondary-btn {
-        border: none;
-        color: #ff6600;
-        background: #ffffff;
-    }
-
-    .secondary-btn:hover {
-        background: #ff6600;
-        color: #ffffff;
-    }
-
-    .section-title {
-        letter-spacing: -0.03em;
-    }
-
     .reveal-on-scroll {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+        opacity: 1;
+        transform: none;
     }
-
-    .reveal-on-scroll.show {
+    .js-reveal .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .js-reveal .reveal-on-scroll.show {
         opacity: 1;
         transform: translateY(0);
     }
-
-    .interactive-card {
-        opacity: 0.96;
+    .hero-stage {
+        min-height: calc(100vh - 40px);
+        display: flex;
+        align-items: center;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-        .hero-visual-wrap,
-        .hero-card,
-        .feature-card,
-        .step-card,
-        .template-card,
-        .metric-card,
-        .card-media,
-        .reveal-on-scroll {
-            transition: none !important;
-            transform: none !important;
-        }
+    .hero {
+        width: 100%;
+        background: #f7f4f3;
+        border: 1px solid #ebe3de;
+        border-radius: 24px;
+        padding: 1.2rem;
+        min-height: 88vh;
     }
-
-    .hero-badge {
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        align-items: center;
+    }
+    .hero-copy {
+        max-width: 560px;
+    }
+    .hero-kicker {
+        color: #4b5563;
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+    .hero-title {
+        color: #1f2937;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 5.2vw, 4rem);
+        line-height: 1.03;
+        letter-spacing: -0.02em;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+        color: #4b5563;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 1.4rem;
+        max-width: 520px;
+    }
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.35rem;
+    }
+    .hero-trust-row {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+    .hero-logos {
+        margin-top: 0.55rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+        color: #111827;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+    .hero-media {
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .hero-media img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        background: #f7f4f3;
+        border: 1px solid #ff6600;
+    }
+    .trustpilot-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        border: none;
-        background: rgba(255, 102, 0, 0.12);
-        color: #ff6600;
+        gap: 0.55rem;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
         border-radius: 999px;
-        padding: 0.4rem 0.9rem;
-        font-size: 0.75rem;
+        padding: 0.45rem 0.85rem;
+        color: #111827;
+        font-size: 0.86rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 4px 12px rgba(17, 24, 39, 0.06);
     }
-
-    .text-soft {
-        color: rgba(255, 102, 0, 0.72);
-    }
-
-    .trust-row {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.65rem;
-        max-width: 450px;
-        margin-top: 1.2rem;
-    }
-
-    .trust-pill {
-        border: none;
-        background: rgba(255, 102, 0, 0.1);
-        border-radius: 10px;
-        padding: 0.45rem 0.5rem;
-        text-align: center;
+    .trustpilot-stars {
+        color: #00b67a;
+        letter-spacing: 0.06em;
         font-size: 0.8rem;
-        font-weight: 700;
     }
-
-    @media (min-width: 768px) {
+    .primary-btn {
+        background: #ff6600;
+        color: #fff;
+        border: 1px solid #ff6600;
+    }
+    .primary-btn:hover {
+        background: #e85b00;
+        color: #fff;
+    }
+    .secondary-btn {
+        border: 1px solid #ffc9a0;
+        color: #ff6600;
+        background: #fff;
+    }
+    .secondary-btn:hover {
+        background: #fff2e7;
+        color: #ff6600;
+    }
+    .story-section {
+        margin-top: 2.8rem;
+        background: #fff;
+        border: 1px solid #ffe6d1;
+        border-radius: 20px;
+        padding: 1rem;
+    }
+    .story-row {
+        display: grid;
+        gap: 1.2rem;
+        grid-template-columns: 1fr;
+        align-items: center;
+    }
+    .story-media {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid #ffd8be;
+        object-fit: cover;
+    }
+    .story-title {
+        color: #111827;
+        letter-spacing: -0.02em;
+    }
+    .story-copy {
+        color: #4b5563;
+    }
+    .story-point {
+        display: flex;
+        gap: 0.55rem;
+        align-items: flex-start;
+        color: #374151;
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
+    }
+    .story-point i {
+        color: #ff6600;
+        margin-top: 0.15rem;
+    }
+    .section-head {
+        color: #111827;
+        letter-spacing: -0.02em;
+    }
+    .section-sub {
+        color: #6b7280;
+    }
+    .cta-block {
+        margin-top: 2.8rem;
+        border-radius: 22px;
+        border: 1px solid #ffd8be;
+        background: linear-gradient(140deg, #fff 0%, #fff2e6 100%);
+        padding: 2rem 1.3rem;
+        text-align: center;
+    }
+    @media (min-width: 900px) {
         .hero-grid {
-            grid-template-columns: 1fr 1.2fr;
-            gap: 2rem;
+            grid-template-columns: 0.82fr 1.18fr;
+            gap: 2.1rem;
+            align-items: stretch;
         }
-
-        .hero-content {
-            justify-self: stretch;
+        .hero-media {
+            height: 100%;
         }
-
-        .hero-visual-wrap {
-            order: 1;
+        .hero-media img {
+            height: min(74vh, 780px);
         }
-
-        .hero-content {
+        .story-section {
+            padding: 1.2rem;
+        }
+        .story-row {
+            grid-template-columns: 1.05fr 1fr;
+            gap: 1.8rem;
+        }
+        .story-row.reverse .story-media-wrap {
             order: 2;
         }
+        .story-row.reverse .story-copy-wrap {
+            order: 1;
+        }
     }
-
+    @media (max-width: 899px) {
+        .hero-stage {
+            min-height: auto;
+        }
+        .hero {
+            border-radius: 18px;
+            padding: 1rem;
+            min-height: 78vh;
+        }
+    }
     @media (max-width: 640px) {
-        .hero-content {
-            align-items: center;
-            text-align: center;
+        .landing-shell {
+            padding-inline: 0.25rem;
         }
-
-        .hero-content .flex {
+        .hero {
+            border-radius: 14px;
+            padding: 0.9rem;
+            min-height: 66vh;
+        }
+        .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .hero-actions a {
             width: 100%;
-        }
-
-        .hero-content .primary-btn,
-        .hero-content .secondary-btn {
-            width: 100%;
-        }
-
-        .hero-card {
-            width: 100%;
-        }
-
-        .trust-row {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            max-width: 100%;
-        }
-
-        .feature-card,
-        .step-card,
-        .template-card {
-            min-height: 320px;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="landing-shell px-1 sm:px-2">
-    <section class="rounded-3xl px-3 py-7 sm:px-5 sm:py-9 reveal-on-scroll">
-        <div class="hero-grid">
-            <div class="hero-content">
-                <span class="hero-badge mb-4"><i class="fas fa-bolt"></i> Resume Builder</span>
-                <h1 class="section-title text-3xl sm:text-6xl font-black leading-tight mt-4 mb-5">
-                    The Best Online Resume Builder In Ghana 
-                </h1>
-                <p class="text-base sm:text-2xl text-soft max-w-2xl mb-8">
-                    Easily create a resume from any device with a modern, elegant workflow and smart AI guidance.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                    <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
-                       class="primary-btn rounded-xl px-7 py-3 font-bold text-center transition" data-show-loading>
-                        Create My Resume Now
-                    </a>
-                    <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('dashboard.index') }}"
-                       class="secondary-btn rounded-xl px-7 py-3 font-semibold text-center transition">
-                        {{ 'Go to Dashboard' if current_user.is_authenticated else 'Import Resume' }}
-                    </a>
-                </div>
-                <div class="hero-card rounded-2xl p-4 sm:p-5">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="metric-card rounded-xl p-3">
-                            <p class="text-sm font-black text-[#ff6600]" data-counter="55">0%</p>
-                            <p class="text-xs text-soft">more interviews</p>
-                        </div>
-                        <div class="metric-card rounded-xl p-3">
-                            <p class="text-sm font-black text-[#ff6600]" data-counter="23">0%</p>
-                            <p class="text-xs text-soft">more likely job offer</p>
+<div class="landing-shell py-2 sm:py-3">
+    <section class="hero-stage reveal-on-scroll">
+        <div class="hero">
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Best AI Resume Builder</div>
+                    <h1 class="hero-title">Your success story begins with a resume.</h1>
+                    <p class="hero-subtitle">
+                        Create a beautiful resume quickly with intelligent guidance and customizable templates.
+                        Impress your future employer with a job-ready resume in minutes.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
+                           class="primary-btn rounded-xl px-7 py-3 font-bold text-center transition" data-show-loading>
+                            Create My Resume
+                        </a>
+                        <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('dashboard.index') }}"
+                           class="secondary-btn rounded-xl px-7 py-3 font-semibold text-center transition">
+                            {{ 'Go to Dashboard' if current_user.is_authenticated else 'See Examples' }}
+                        </a>
+                    </div>
+                    <div class="hero-trust-row">
+                        Trusted by thousands of successful job seekers worldwide.
+                        <div class="hero-logos">
+                            <span>Hubtel</span>
+                            <span>Goldfields</span>
+                            <span>AdomFM</span>
+                            <span>PizzaMan</span>
+                            <span> Tobinco</span>
                         </div>
                     </div>
+                    <div class="trustpilot-badge mt-4" aria-label="Trustpilot rating">
+                        <span class="trustpilot-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                        <span>Trustpilot</span>
+                    </div>
                 </div>
-                <div class="trust-row">
-                    <span class="trust-pill">Hubtel</span>
-                    <span class="trust-pill">Nestle</span>
-                    <span class="trust-pill">Goldfields</span>
-                    <span class="trust-pill">Fidelity</span>
-                    <span class="trust-pill">Goil</span>
-                    <span class="trust-pill">MTN</span>
+                <div class="hero-media">
+                    <img
+                        src="{{ url_for('static', filename='welcome_banner-removebg-preview.png') }}"
+                        alt="Welcome banner preview"
+                        width="1200"
+                        height="760"
+                        fetchpriority="high"
+                        decoding="async"
+                    >
                 </div>
             </div>
-            <div class="hero-visual-wrap">
+        </div>
+    </section>
+
+    <section class="mt-10 reveal-on-scroll">
+        <h2 class="section-head text-2xl sm:text-4xl font-black mb-2">What we do</h2>
+        <p class="section-sub text-base sm:text-lg max-w-2xl">
+            AT ResumeGhana, we help you boost your chances in the local job market by helping you create a resume that is ATS friendly and job-ready.
+
+        </p>
+    </section>
+
+    <section class="story-section reveal-on-scroll">
+        <div class="story-row">
+            <div class="story-media-wrap">
                 <img
-                    class="hero-image"
-                    src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}"
-                    alt="Professional resume workspace visual"
+                    src="{{ url_for('static', filename='create_on_any_device.png') }}"
+                    alt="Create resume on any device"
+                    class="story-media"
                     width="1200"
-                    height="720"
+                    height="760"
+                    loading="lazy"
                     decoding="async"
-                    fetchpriority="high"
                 >
             </div>
-        </div>
-    </section>
-
-    <section class="mt-12 sm:mt-16 reveal-on-scroll">
-        <h2 class="section-title text-2xl sm:text-4xl font-black mb-3">
-            
-            Lets create the Future Together
-
-        </h2>
-        <p class="text-soft mb-8 max-w-2xl">Get both AI and human support as you create your resume</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="AI resume optimization dashboard" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-wand-magic-sparkles"></i></div>
-                <h3 class="text-xl font-bold mb-2">AI Writing Upgrade</h3>
-                <p class="text-soft">Refines your summary, achievements, and role bullets with concise recruiter-friendly language.</p>
-                <p class="text-soft text-sm">Get strong action verbs, cleaner sentence structure, and role-targeted phrasing in seconds.</p>
-            </article>
-            <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='compressed_pexels-gustavo-fring-5934198.jpg') }}" alt="Modern resume template interface" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-laptop-code"></i></div>
-                <h3 class="text-xl font-bold mb-2">Get Human Support 24/7</h3>
-                <p class="text-soft">Get help from our team of experts to help you create your resume.</p>
-                <p class="text-soft text-sm">We are here to help you every step of the way.</p>
-            </article>
-            <article class="feature-card interactive-card rounded-2xl p-6">
-                <img class="card-media" src="{{ url_for('static', filename='demo.jpg') }}" alt="ATS resume score analytics" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <div class="text-3xl text-[#ff6600] mb-4"><i class="fas fa-file-circle-check"></i></div>
-                <h3 class="text-xl font-bold mb-2">Get Demo Interview Before Your Actual Interview</h3>
-                <p class="text-soft">Get a feel of the interview process and how to answer the questions.</p>
-                <p class="text-soft text-sm">Prepare for your actual interview with confidence.</p>
-            </article>
-        </div>
-    </section>
-
-    <section class="mt-12 sm:mt-16 reveal-on-scroll">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-            <div>
-                <h2 class="section-title text-2xl sm:text-4xl font-black mb-2">How it works</h2>
-                <p class="text-soft">Fast flow, zero confusion. Build from any device.</p>
+            <div class="story-copy-wrap">
+                <h3 class="story-title text-2xl sm:text-3xl font-extrabold mb-3">Create on any device with AI</h3>
+                <p class="story-copy text-base sm:text-lg">
+                    Write, edit, and polish your resume from phone, tablet, or desktop without losing progress.
+                </p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Fast, guided form flow from start to finish</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Saved progress so users can continue anytime</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Clean export workflow for final applications</span></p>
             </div>
-            <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
-               class="text-[#ff6600] font-semibold hover:opacity-80 transition" data-show-loading>
-                Launch builder <i class="fas fa-arrow-right ml-1"></i>
-            </a>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='pexels-thirdman-5319259.jpg') }}" alt="Sign up workflow for resume builder" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <p class="text-[#ff6600] font-black text-xl mb-2">01</p>
-                <h3 class="font-bold text-lg mb-2">Create account</h3>
-                <p class="text-sm text-soft">Start quickly with simple sign up and instant access to the builder.</p>
-                <p class="text-soft text-sm">Your projects save automatically so you can continue editing from any device.</p>
-            </article>
-            <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-ats.svg') }}" alt="Adding work achievements into resume form" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <p class="text-[#ff6600] font-black text-xl mb-2">02</p>
-                <h3 class="font-bold text-lg mb-2">Add your story</h3>
-                <p class="text-sm text-soft">Input your achievements and let AI sharpen impact and clarity.</p>
-                <p class="text-soft text-sm">Smart prompts help you turn duties into measurable achievements recruiters notice.</p>
-            </article>
-            <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='hero-visual.svg') }}" alt="Choosing a resume template style" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <p class="text-[#ff6600] font-black text-xl mb-2">03</p>
-                <h3 class="font-bold text-lg mb-2">Select template</h3>
-                <p class="text-sm text-soft">Pick from polished formats tailored to your target role.</p>
-                <p class="text-soft text-sm">Preview each style instantly and switch anytime without losing your content.</p>
-            </article>
-            <article class="step-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='apply.jpg') }}" alt="Download and apply to jobs workflow" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <p class="text-[#ff6600] font-black text-xl mb-2">04</p>
-                <h3 class="font-bold text-lg mb-2">Export and apply</h3>
-                <p class="text-sm text-soft">Download and apply confidently with an ATS-friendly resume.</p>
-                <p class="text-soft text-sm">Publish a clean PDF that looks professional in inboxes, screens, and print.</p>
-            </article>
         </div>
     </section>
 
-    <section class="mt-12 sm:mt-16 reveal-on-scroll">
-        <h2 class="section-title text-2xl sm:text-4xl font-black mb-3">Template feel preview</h2>
-        <p class="text-soft mb-8 max-w-xl">Switch between design directions without starting over.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-layout.svg') }}" alt="Modern minimal resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <h3 class="font-bold text-lg mb-2">Modern Minimal</h3>
-                <p class="text-sm text-soft mb-4">Simple, elegant, and focused on readability for technical roles.</p>
-                <p class="text-soft text-sm">Best for software, product, and data candidates who want clear structure first.</p>
-                <span class="text-xs px-3 py-1 rounded-full bg-[#ff6600]/10 text-[#ff6600]">Popular</span>
-            </article>
-            <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-career.svg') }}" alt="Corporate professional resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <h3 class="font-bold text-lg mb-2">Corporate Professional</h3>
-                <p class="text-sm text-soft mb-4">A crisp formal layout for finance, operations, and leadership tracks.</p>
-                <p class="text-soft text-sm">Ideal when you need trust, clarity, and executive polish in one design language.</p>
-                <span class="text-xs px-3 py-1 rounded-full bg-[#ff6600]/10 text-[#ff6600]">Balanced</span>
-            </article>
-            <article class="template-card rounded-2xl p-5">
-                <img class="card-media" src="{{ url_for('static', filename='card-ai.svg') }}" alt="Creative designer resume template preview" width="1200" height="720" loading="lazy" decoding="async" fetchpriority="low">
-                <h3 class="font-bold text-lg mb-2">Creative Designer</h3>
-                <p class="text-sm text-soft mb-4">Expressive format while staying ATS-safe and professionally sharp.</p>
-                <p class="text-soft text-sm">A stronger visual identity for designers, marketers, and brand-facing roles.</p>
-                <span class="text-xs px-3 py-1 rounded-full bg-[#ff6600]/10 text-[#ff6600]">Bold</span>
-            </article>
+    <section class="story-section reveal-on-scroll">
+        <div class="story-row reverse">
+            <div class="story-media-wrap">
+                <img
+                    src="{{ url_for('static', filename='experts_review_resume.png') }}"
+                    alt="Experts reviewing resume"
+                    class="story-media"
+                    width="1200"
+                    height="760"
+                    loading="lazy"
+                    decoding="async"
+                >
+            </div>
+            <div class="story-copy-wrap">
+                <h3 class="story-title text-2xl sm:text-3xl font-extrabold mb-3">Get expert support that improves outcomes</h3>
+                <p class="story-copy text-base sm:text-lg">
+                    Blend AI speed with human review so every resume sounds credible, relevant, and ready for recruiters.
+                </p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Targeted edits for summary, achievements, and tone</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>ATS-safe structure with stronger keyword coverage</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Support from the team when users need guidance</span></p>
+            </div>
         </div>
     </section>
 
-    <section class="mt-12 sm:mt-16 mb-4 reveal-on-scroll">
-        <div class="rounded-3xl bg-white px-6 py-10 sm:p-10 text-center">
-            <h2 class="section-title text-2xl sm:text-4xl font-black mb-4">Ready to design your next career move?</h2>
-            <p class="text-soft max-w-2xl mx-auto mb-8">Create a standout resume with modern layout quality and practical AI support built for real hiring outcomes.</p>
+    <section class="story-section reveal-on-scroll">
+        <div class="story-row">
+            <div class="story-media-wrap">
+                <img
+                    src="{{ url_for('static', filename='mock_interview.png') }}"
+                    alt="Mock interview preparation"
+                    class="story-media"
+                    width="1200"
+                    height="760"
+                    loading="lazy"
+                    decoding="async"
+                >
+            </div>
+            <div class="story-copy-wrap">
+                <h3 class="story-title text-2xl sm:text-3xl font-extrabold mb-3">Practice with mock interviews</h3>
+                <p class="story-copy text-base sm:text-lg">
+                    Go beyond the CV. We patner with HR professionals to help you practice with mock interviews for your interview.
+                </p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Role-focused interview rehearsal before your real interview</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Feedback to improve confidence and delivery</span></p>
+                <p class="story-point"><i class="fas fa-check-circle"></i><span>Better match between your resume and interview story</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-block reveal-on-scroll">
+        <div>
+            <h2 class="section-head text-2xl sm:text-4xl font-black mb-4">Ready to build your resume story?</h2>
+            <p class="section-sub max-w-2xl mx-auto mb-8">
+                Start with the builder, apply expert suggestions, and export a clean resume that feels ready for real hiring.
+            </p>
             <a href="{{ url_for('resume.builder') if current_user.is_authenticated else url_for('auth.signup') }}"
                class="primary-btn inline-block rounded-xl px-8 py-3 font-bold transition" data-show-loading>
                 Create Resume Now
@@ -492,39 +401,13 @@
 {% block extra_js %}
 <script>
     (function () {
-        const animatedCounters = document.querySelectorAll("[data-counter]");
         const revealBlocks = document.querySelectorAll(".reveal-on-scroll");
-        const interactiveCards = document.querySelectorAll(".interactive-card");
+        document.body.classList.add("js-reveal");
 
-        const counterObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) {
-                    return;
-                }
-
-                const target = entry.target;
-                const maxValue = Number(target.getAttribute("data-counter")) || 0;
-                const duration = 1200;
-                const startAt = performance.now();
-
-                const step = (time) => {
-                    const progress = Math.min((time - startAt) / duration, 1);
-                    const nextValue = Math.floor(progress * maxValue);
-                    target.textContent = String(nextValue) + "%";
-
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    } else {
-                        target.textContent = String(maxValue) + "%";
-                    }
-                };
-
-                window.requestAnimationFrame(step);
-                observer.unobserve(target);
-            });
-        }, { threshold: 0.45 });
-
-        animatedCounters.forEach((counter) => counterObserver.observe(counter));
+        if (!("IntersectionObserver" in window)) {
+            revealBlocks.forEach((block) => block.classList.add("show"));
+            return;
+        }
 
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -535,21 +418,6 @@
         }, { threshold: 0.2 });
 
         revealBlocks.forEach((block) => revealObserver.observe(block));
-
-        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-            interactiveCards.forEach((card) => {
-                card.addEventListener("mousemove", (event) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 14;
-                    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -14;
-                    card.style.transform = "perspective(700px) rotateX(" + y + "deg) rotateY(" + x + "deg) translateY(-4px)";
-                });
-
-                card.addEventListener("mouseleave", () => {
-                    card.style.transform = "perspective(700px) rotateX(0deg) rotateY(0deg) translateY(0px)";
-                });
-            });
-        }
     }());
 </script>
 {% endblock %}

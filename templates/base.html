@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ResumeGhana{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -86,9 +86,25 @@
             var overlay = document.getElementById("page-load-overlay");
             if (!overlay) return;
 
+            var overlayFallbackTimer = null;
+
             function hideOverlay() {
                 overlay.classList.add("hidden");
                 overlay.setAttribute("aria-hidden", "true");
+                if (overlayFallbackTimer) {
+                    window.clearTimeout(overlayFallbackTimer);
+                    overlayFallbackTimer = null;
+                }
+            }
+
+            function showOverlay() {
+                overlay.classList.remove("hidden");
+                overlay.setAttribute("aria-hidden", "false");
+                // Safety net: never leave user stuck in infinite loading state.
+                if (overlayFallbackTimer) {
+                    window.clearTimeout(overlayFallbackTimer);
+                }
+                overlayFallbackTimer = window.setTimeout(hideOverlay, 10000);
             }
 
             if (document.readyState === "complete") {
@@ -97,10 +113,14 @@
                 window.addEventListener("load", function () { setTimeout(hideOverlay, 200); });
             }
 
+            // Important for browser back/forward cache restores.
+            window.addEventListener("pageshow", function () {
+                setTimeout(hideOverlay, 0);
+            });
+
             document.querySelectorAll('a[data-show-loading]').forEach(function (a) {
                 a.addEventListener("click", function () {
-                    overlay.classList.remove("hidden");
-                    overlay.setAttribute("aria-hidden", "false");
+                    showOverlay();
                 });
             });
         })();

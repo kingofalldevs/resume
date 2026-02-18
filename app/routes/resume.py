@@ -293,7 +293,7 @@ def template_select():
     # Render with chosen template and show
     html = build_resume_html(resume_data, template_name)
     flash("Preview ready. Choose Save or Download to continue to payment.", "info")
-    return render_template("tailored.html", content=html)
+    return render_template("tailored.html", content=html, resume_id=None)
 
 
 @resume_bp.route("/save", methods=["POST"])
@@ -414,6 +414,7 @@ def checkout_callback():
     # action == "download": return downloadable HTML resume (and keep a saved copy)
     filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
     filename = f"{filename_base}_resume.html"
+    template_name = resume_data.get("template_name", "modern_minimal")
     html = build_resume_html(resume_data, template_name)
     response = make_response(html)
     response.headers["Content-Type"] = "text/html; charset=utf-8"
@@ -448,7 +449,7 @@ def view(id):
     resume = Resume.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     data = _resume_to_data(resume)
     html = build_resume_html(data, resume.template_name)
-    return render_template("tailored.html", content=html)
+    return render_template("tailored.html", content=html, resume_id=resume.id)
 
 
 @resume_bp.route("/resume/<int:id>/download")
