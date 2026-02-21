@@ -11,6 +11,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .site-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: saturate(150%) blur(8px);
+        }
+        .site-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            font-size: 1.1rem;
+            color: #ff6600;
+            text-decoration: none;
+        }
+        .site-brand-mark {
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 0.55rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(140deg, #ff6600 0%, #ff8a3d 100%);
+            color: #fff;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.28);
+        }
+        .site-brand-name {
+            color: #111827;
+        }
+        .site-brand-name strong {
+            color: #ff6600;
+            font-weight: 800;
+        }
+        .nav-hamburger {
+            border: 1px solid rgba(255, 102, 0, 0.22);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .nav-hamburger:hover {
+            border-color: rgba(255, 102, 0, 0.42);
+            background: rgba(255, 102, 0, 0.08);
+        }
+        .site-nav-links a {
+            font-weight: 600;
+        }
+        @media (max-width: 767px) {
+            .site-nav-links {
+                top: calc(100% + 0.45rem);
+                left: 0.75rem;
+                right: 0.75rem;
+                background: #fff;
+                border: 1px solid rgba(255, 102, 0, 0.2);
+                border-radius: 0.9rem;
+                padding: 0.7rem;
+                box-shadow: 0 12px 28px rgba(17, 24, 39, 0.12);
+                align-items: stretch;
+                gap: 0.25rem;
+            }
+            .site-nav-links a {
+                display: block;
+                text-align: left;
+                border-radius: 0.6rem;
+                padding: 0.7rem 0.75rem;
+            }
+            .site-nav-links a:hover {
+                background: rgba(255, 102, 0, 0.08);
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -19,20 +86,46 @@
         <div class="page-load-spinner"></div>
         <span class="page-load-text">Loading...</span>
     </div>
-    <nav class="bg-white text-[#ff6600] shadow-sm sticky top-0 z-50">
+    <nav class="site-nav text-[#ff6600] shadow-sm sticky top-0 z-50 border-b border-[#ff6600]/10">
         <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="{{ url_for('dashboard.index') }}" class="text-lg sm:text-xl font-bold text-[#ff6600]">ResumeGhana</a>
-            <button type="button" id="nav-toggle" class="md:hidden p-2 text-[#ff6600] hover:bg-[#ff6600]/10 rounded" aria-label="Menu">
+            <a href="{{ url_for('dashboard.index') }}" class="site-brand" aria-label="ResumeGhana home">
+                <span class="site-brand-mark"><i class="fa-solid fa-r"></i></span>
+                <span class="site-brand-name">Resume<strong>Ghana</strong></span>
+            </a>
+            <button type="button" id="nav-toggle" class="nav-hamburger md:hidden p-2 text-[#ff6600] rounded-lg" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <div id="nav-links" class="hidden md:flex items-center gap-4 lg:gap-6 flex-col md:flex-row md:static absolute top-full left-0 right-0 bg-white md:bg-transparent p-4 md:p-0 gap-3 shadow-lg md:shadow-none border-t border-[#ff6600]/20 md:border-0">
+            <div id="nav-links" class="site-nav-links hidden md:flex items-center gap-4 lg:gap-6 flex-col md:flex-row md:static absolute md:top-auto md:left-auto md:right-auto md:bg-transparent md:p-0 md:shadow-none md:border-0">
                 <a href="{{ url_for('dashboard.index') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Home</a>
                 <a href="{{ url_for('resume.builder') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0" data-show-loading>Create Resume</a>
                 <a href="{{ url_for('dashboard.index') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Dashboard</a>
+                <a href="{{ url_for('dashboard.pricing') }}" class="hover:text-[#ff6600]/80 transition py-2 md:py-0">Pricing</a>
             </div>
         </div>
     </nav>
-    <script>document.getElementById('nav-toggle')?.addEventListener('click',function(){document.getElementById('nav-links').classList.toggle('hidden');});</script>
+    <script>
+        (function () {
+            var toggle = document.getElementById("nav-toggle");
+            var links = document.getElementById("nav-links");
+            if (!toggle || !links) return;
+
+            function setOpen(isOpen) {
+                links.classList.toggle("hidden", !isOpen);
+                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            }
+
+            toggle.addEventListener("click", function () {
+                var currentlyHidden = links.classList.contains("hidden");
+                setOpen(currentlyHidden);
+            });
+
+            links.querySelectorAll("a").forEach(function (a) {
+                a.addEventListener("click", function () {
+                    if (window.innerWidth < 768) setOpen(false);
+                });
+            });
+        })();
+    </script>
 
     <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -59,6 +152,7 @@
                     <ul class="space-y-2">
                         <li><a href="{{ url_for('dashboard.index') }}" class="hover:text-[#ff6600] transition">Home</a></li>
                         <li><a href="{{ url_for('resume.builder') }}" class="hover:text-[#ff6600] transition" data-show-loading>Create Resume</a></li>
+                        <li><a href="{{ url_for('dashboard.pricing') }}" class="hover:text-[#ff6600] transition">Pricing</a></li>
                     </ul>
                 </div>
                 <div>

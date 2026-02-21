@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Pricing — ResumeGhana{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto">
+    <div class="bg-white border border-[#ff6600]/20 rounded-2xl p-6 sm:p-8 shadow-sm mb-6">
+        <p class="text-[#ff6600] text-sm font-semibold tracking-wide uppercase mb-2">Pricing</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3">Simple and transparent pricing</h1>
+        <p class="text-gray-600">Pay only for the service you need. No hidden charges.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <p class="text-sm font-semibold text-gray-500 mb-2">Resume Download</p>
+            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 5</p>
+            <p class="text-sm text-gray-600">Per resume download.</p>
+        </article>
+
+        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <p class="text-sm font-semibold text-gray-500 mb-2">HR Interview</p>
+            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 200</p>
+            <p class="text-sm text-gray-600">Mock or coaching interview session.</p>
+        </article>
+
+        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <p class="text-sm font-semibold text-gray-500 mb-2">Expert Review</p>
+            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 50</p>
+            <p class="text-sm text-gray-600">Detailed expert resume review.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

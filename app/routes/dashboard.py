@@ -172,6 +172,13 @@ def template_preview(template_name: str):
     return Response(svg, mimetype="image/svg+xml")
 
 
+@dashboard_bp.route("/pricing")
+@login_required
+def pricing():
+    """Simple pricing page for core services."""
+    return render_template("dashboard/pricing.html")
+
+
 @dashboard_bp.route("/book-interview", methods=["GET", "POST"])
 @login_required
 def book_interview():
