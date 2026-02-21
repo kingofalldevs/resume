@@ -1,31 +1,138 @@
 {% extends "base.html" %}
 {% block title %}Pricing — ResumeGhana{% endblock %}
 
+{% block extra_css %}
+<style>
+    .pricing-shell {
+        max-width: 1120px;
+        margin: 0 auto;
+    }
+    .pricing-hero {
+        background: linear-gradient(140deg, #ffffff 0%, #fff6ef 70%, #ffe4cf 100%);
+        border: 1px solid rgba(255, 102, 0, 0.25);
+        border-radius: 24px;
+        padding: 1.7rem 1.2rem;
+        box-shadow: 0 10px 28px rgba(255, 102, 0, 0.10);
+    }
+    .pricing-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border: 1px solid rgba(255, 102, 0, 0.25);
+        border-radius: 999px;
+        padding: 0.35rem 0.72rem;
+        color: #c24f00;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+    .price-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        padding: 1.25rem;
+        box-shadow: 0 3px 14px rgba(17, 24, 39, 0.06);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .price-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 102, 0, 0.35);
+        box-shadow: 0 12px 26px rgba(255, 102, 0, 0.12);
+    }
+    .price-card.featured {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.15), 0 12px 26px rgba(255, 102, 0, 0.16);
+    }
+    .price-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(255, 102, 0, 0.12);
+        color: #c24f00;
+        border-radius: 999px;
+        padding: 0.3rem 0.65rem;
+        font-size: 0.74rem;
+        font-weight: 700;
+        margin-bottom: 0.7rem;
+    }
+    .price-value {
+        font-size: 2.05rem;
+        line-height: 1.05;
+        font-weight: 800;
+        color: #ff6600;
+    }
+    .price-note {
+        color: #6b7280;
+        font-size: 0.84rem;
+        margin-top: 0.35rem;
+    }
+    .price-list {
+        margin-top: 0.9rem;
+        display: grid;
+        gap: 0.45rem;
+        color: #4b5563;
+        font-size: 0.85rem;
+    }
+    .price-list i {
+        color: #ff6600;
+        margin-right: 0.45rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="max-w-5xl mx-auto">
-    <div class="bg-white border border-[#ff6600]/20 rounded-2xl p-6 sm:p-8 shadow-sm mb-6">
-        <p class="text-[#ff6600] text-sm font-semibold tracking-wide uppercase mb-2">Pricing</p>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3">Simple and transparent pricing</h1>
-        <p class="text-gray-600">Pay only for the service you need. No hidden charges.</p>
+<section class="pricing-shell">
+    <div class="pricing-hero mb-6">
+        <p class="pricing-eyebrow mb-3"><i class="fa-solid fa-tags"></i> Pricing</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3">Professional services with clear, transparent rates</h1>
+        <p class="text-gray-600 max-w-2xl">Choose exactly what you need, when you need it. Every service is priced in Ghana cedis with no hidden charges.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <p class="text-sm font-semibold text-gray-500 mb-2">Resume Download</p>
-            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 5</p>
-            <p class="text-sm text-gray-600">Per resume download.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+        <article class="price-card">
+            <span class="price-tag"><i class="fa-solid fa-file-arrow-down"></i> Resume Download</span>
+            <p class="price-value">GHS 5</p>
+            <p class="price-note">Per resume download</p>
+            <div class="price-list">
+                <p><i class="fa-solid fa-check"></i>One-time payment per download</p>
+                <p><i class="fa-solid fa-check"></i>Professional template output</p>
+                <p><i class="fa-solid fa-check"></i>Ready for print and job applications</p>
+            </div>
+            <a href="{{ url_for('resume.builder') }}" class="mt-4 inline-flex justify-center bg-[#ff6600] text-white font-semibold rounded-xl px-4 py-2.5 hover:opacity-90 transition" data-show-loading>
+                Start Building
+            </a>
         </article>
 
-        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <p class="text-sm font-semibold text-gray-500 mb-2">HR Interview</p>
-            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 200</p>
-            <p class="text-sm text-gray-600">Mock or coaching interview session.</p>
+        <article class="price-card featured">
+            <span class="price-tag"><i class="fa-solid fa-star"></i> HR Interview</span>
+            <p class="price-value">GHS 200</p>
+            <p class="price-note">Mock or coaching interview session</p>
+            <div class="price-list">
+                <p><i class="fa-solid fa-check"></i>One-on-one interview simulation</p>
+                <p><i class="fa-solid fa-check"></i>Practical HR feedback on your answers</p>
+                <p><i class="fa-solid fa-check"></i>Confidence and delivery coaching</p>
+            </div>
+            <a href="{{ url_for('dashboard.book_interview') }}" class="mt-4 inline-flex justify-center bg-[#ff6600] text-white font-semibold rounded-xl px-4 py-2.5 hover:opacity-90 transition">
+                Book Interview
+            </a>
         </article>
 
-        <article class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <p class="text-sm font-semibold text-gray-500 mb-2">Expert Review</p>
-            <p class="text-3xl font-extrabold text-[#ff6600] mb-2">GHS 50</p>
-            <p class="text-sm text-gray-600">Detailed expert resume review.</p>
+        <article class="price-card">
+            <span class="price-tag"><i class="fa-solid fa-user-pen"></i> Expert Review</span>
+            <p class="price-value">GHS 50</p>
+            <p class="price-note">Detailed resume quality review</p>
+            <div class="price-list">
+                <p><i class="fa-solid fa-check"></i>Targeted feedback on structure and content</p>
+                <p><i class="fa-solid fa-check"></i>ATS and recruiter-readability checks</p>
+                <p><i class="fa-solid fa-check"></i>Actionable improvement recommendations</p>
+            </div>
+            <a href="{{ url_for('dashboard.chat_expert') }}" class="mt-4 inline-flex justify-center bg-[#ff6600] text-white font-semibold rounded-xl px-4 py-2.5 hover:opacity-90 transition">
+                Request Review
+            </a>
         </article>
     </div>
 </section>
