@@ -15,7 +15,7 @@
     
     <form method="POST" action="{{ url_for('resume.builder') }}" id="resumeForm" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="template_name" id="template_name" value="modern_minimal">
+        <input type="hidden" name="template_name" id="template_name" value="{{ selected_template or 'modern_minimal' }}">
         
         <!-- Step 1: Contact & Target -->
         <div class="form-step" id="step-1">
@@ -212,8 +212,8 @@
             <p class="text-gray-600 mb-4">Select a design for your resume.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {% for t in templates or ['modern_minimal','corporate_professional','creative_designer','simple_ats'] %}
-                <label class="border-2 rounded-lg p-4 cursor-pointer hover:border-[#ff6600] transition template-option {% if t == 'modern_minimal' %}border-[#ff6600] bg-[#ff6600]/10{% else %}border-gray-200{% endif %}" data-template="{{ t }}">
-                    <input type="radio" name="template_radio" value="{{ t }}" {% if t == 'modern_minimal' %}checked{% endif %} class="sr-only">
+                <label class="border-2 rounded-lg p-4 cursor-pointer hover:border-[#ff6600] transition template-option {% if t == (selected_template or 'modern_minimal') %}border-[#ff6600] bg-[#ff6600]/10{% else %}border-gray-200{% endif %}" data-template="{{ t }}">
+                    <input type="radio" name="template_radio" value="{{ t }}" {% if t == (selected_template or 'modern_minimal') %}checked{% endif %} class="sr-only">
                     <span class="font-semibold block">{{ t.replace('_', ' ').title() }}</span>
                     <p class="text-sm text-gray-500 mt-1">Professional design</p>
                 </label>

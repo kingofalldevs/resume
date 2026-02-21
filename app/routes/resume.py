@@ -14,7 +14,7 @@ from pypdf import PdfReader
 
 from app import db
 from app.models import Resume, ResumeSection
-from app.services.resume_builder import build_resume_html, TEMPLATES
+from app.services.resume_builder import build_resume_html, TEMPLATES, get_template_catalog
 
 resume_bp = Blueprint("resume", __name__)
 
@@ -209,8 +209,11 @@ def builder():
                     photo.save(os.path.join(current_app.config["UPLOAD_FOLDER"], fn))
                     resume_data["photo_filename"] = fn
 
-        template_name = request.form.get("template_name", "modern_minimal")
+        template_name = request.form.get("template_name", session.get("preferred_template", "modern_minimal"))
+        if template_name not in TEMPLATES:
+            template_name = "modern_minimal"
         resume_data["template_name"] = template_name
+        session["preferred_template"] = template_name
 
         if not resume_data.get("skills") or not resume_data.get("experience"):
             flash("Please provide at least Skills and Experience.", "error")
@@ -219,7 +222,11 @@ def builder():
         session["resume_data"] = resume_data
         return redirect(url_for("resume.template_picker"))
 
-    return render_template("builder.html", templates=TEMPLATES)
+    selected_template = request.args.get("template", session.get("preferred_template", "modern_minimal"))
+    if selected_template not in TEMPLATES:
+        selected_template = "modern_minimal"
+    session["preferred_template"] = selected_template
+    return render_template("builder.html", templates=TEMPLATES, selected_template=selected_template)
 
 
 @resume_bp.route("/templates")
@@ -231,28 +238,15 @@ def template_picker():
         flash("Please fill in your resume details first.", "error")
         return redirect(url_for("resume.builder"))
 
-    template_info = {
-        "modern_minimal": {
-            "label": "Modern Minimal",
-            "desc": "Simple, elegant, and focused on readability. Best for tech and product roles.",
-        },
-        "corporate_professional": {
-            "label": "Corporate Professional",
-            "desc": "Crisp formal layout for finance, operations, and leadership positions.",
-        },
-        "creative_designer": {
-            "label": "Creative Designer",
-            "desc": "Expressive format with visual flair while staying ATS-safe.",
-        },
-        "simple_ats": {
-            "label": "Simple ATS",
-            "desc": "Maximum compatibility with applicant tracking systems. Clean and direct.",
-        },
-    }
+    template_catalog = get_template_catalog()
+    selected_template = resume_data.get("template_name", session.get("preferred_template", "modern_minimal"))
+    if selected_template not in TEMPLATES:
+        selected_template = "modern_minimal"
     return render_template(
         "template_picker.html",
         templates=TEMPLATES,
-        template_info=template_info,
+        template_catalog=template_catalog,
+        selected_template=selected_template,
         resume_name=resume_data.get("name", "Your Resume"),
     )
 
@@ -289,6 +283,7 @@ def template_select():
 
     resume_data["template_name"] = template_name
     session["resume_data"] = resume_data
+    session["preferred_template"] = template_name
 
     # Render with chosen template and show
     html = build_resume_html(resume_data, template_name)

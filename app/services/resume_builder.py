@@ -5,13 +5,36 @@ import os
 import re
 from jinja2 import Template
 
-# Template names available (kept for UI compatibility).
-TEMPLATES = [
-    "modern_minimal",
-    "corporate_professional",
-    "creative_designer",
-    "simple_ats",
+TEMPLATE_CATALOG = [
+    {"id": "modern_minimal", "label": "Modern Minimal", "desc": "Clean modern layout for general professional roles.", "base": "modern_minimal"},
+    {"id": "corporate_professional", "label": "Corporate Professional", "desc": "Traditional corporate style for business and management.", "base": "corporate_professional"},
+    {"id": "creative_designer", "label": "Creative Designer", "desc": "Visual-forward design for creative and product portfolios.", "base": "creative_designer"},
+    {"id": "simple_ats", "label": "Simple ATS", "desc": "Highly scannable one-column resume for ATS compatibility.", "base": "simple_ats"},
+    {"id": "executive_navy", "label": "Executive Navy", "desc": "Executive profile layout with navy-accent hierarchy.", "base": "corporate_professional"},
+    {"id": "executive_charcoal", "label": "Executive Charcoal", "desc": "Neutral executive style with strong document contrast.", "base": "corporate_professional"},
+    {"id": "elegant_serif", "label": "Elegant Serif", "desc": "Serif-based formal style for consulting and strategy roles.", "base": "modern_minimal"},
+    {"id": "bold_orange", "label": "Bold Orange", "desc": "High-contrast accent style with modern visual emphasis.", "base": "creative_designer"},
+    {"id": "clean_slate", "label": "Clean Slate", "desc": "Balanced professional look focused on readability.", "base": "modern_minimal"},
+    {"id": "minimal_mono", "label": "Minimal Mono", "desc": "Monochrome minimal layout suitable for technical roles.", "base": "simple_ats"},
+    {"id": "two_column_blue", "label": "Two Column Blue", "desc": "Structured two-column format with blue accent rails.", "base": "creative_designer"},
+    {"id": "two_column_green", "label": "Two Column Green", "desc": "Two-column structure with calm green highlights.", "base": "creative_designer"},
+    {"id": "premium_gold", "label": "Premium Gold", "desc": "Premium resume style with restrained gold accents.", "base": "corporate_professional"},
+    {"id": "startup_modern", "label": "Startup Modern", "desc": "Sharp startup-style layout for product and growth roles.", "base": "modern_minimal"},
+    {"id": "classic_black", "label": "Classic Black", "desc": "Classic black-and-white formal document presentation.", "base": "simple_ats"},
+    {"id": "fresh_teal", "label": "Fresh Teal", "desc": "Contemporary teal style for modern professional branding.", "base": "modern_minimal"},
+    {"id": "plum_accent", "label": "Plum Accent", "desc": "Professional layout with refined plum tone accents.", "base": "corporate_professional"},
+    {"id": "soft_gray", "label": "Soft Gray", "desc": "Subtle gray styling with understated section contrast.", "base": "simple_ats"},
+    {"id": "ivory_professional", "label": "Ivory Professional", "desc": "Warm paper-inspired style for polished applications.", "base": "modern_minimal"},
+    {"id": "dark_sidebar", "label": "Dark Sidebar", "desc": "Sidebar-emphasis layout for skill-forward resumes.", "base": "creative_designer"},
 ]
+
+TEMPLATE_BASE_MAP = {item["id"]: item["base"] for item in TEMPLATE_CATALOG}
+TEMPLATES = [item["id"] for item in TEMPLATE_CATALOG]
+
+
+def get_template_catalog() -> list[dict]:
+    """Template metadata used across dashboard and picker UIs."""
+    return TEMPLATE_CATALOG
 
 
 def _ai_enhance(resume_data: dict) -> dict:
@@ -72,7 +95,8 @@ Raw Experience:
 
 def _load_template(template_name: str) -> str:
     """Load template HTML by name."""
-    path = os.path.join(os.path.dirname(__file__), "..", "templates", "resume_templates", f"{template_name}.html")
+    resolved_name = TEMPLATE_BASE_MAP.get(template_name, template_name)
+    path = os.path.join(os.path.dirname(__file__), "..", "templates", "resume_templates", f"{resolved_name}.html")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()

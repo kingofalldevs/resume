@@ -3,183 +3,34 @@
 
 {% block extra_css %}
 <style>
-    .picker-header { text-align: center; margin-bottom: 2rem; }
-    .picker-header h1 { font-size: 1.75rem; font-weight: 700; color: #1a1a1a; }
-    .picker-header p { color: #666; margin-top: .5rem; font-size: .95rem; }
-
-    .template-grid {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    @media (min-width: 640px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+    .picker-header { text-align: center; margin-bottom: 1.8rem; }
+    .picker-header h1 { font-size: 1.75rem; font-weight: 800; color: #111827; }
+    .picker-header p { color: #6b7280; margin-top: .4rem; font-size: .95rem; }
+    .template-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    @media (min-width: 720px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1024px) { .template-grid { grid-template-columns: repeat(4, 1fr); } }
-
-    .tpl-card {
-        background: #fff;
-        border: 2px solid #e5e7eb;
-        border-radius: 1rem;
-        padding: 0;
-        cursor: pointer;
-        transition: border-color .25s, box-shadow .25s, transform .2s;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    .tpl-card:hover {
-        border-color: #ff6600;
-        box-shadow: 0 8px 24px rgba(255,102,0,.12);
-        transform: translateY(-3px);
-    }
-    .tpl-card.selected {
-        border-color: #ff6600;
-        box-shadow: 0 0 0 3px rgba(255,102,0,.25), 0 8px 24px rgba(255,102,0,.12);
-    }
-    .tpl-card.selected .tpl-badge { opacity: 1; }
-
-    .tpl-thumb {
-        width: 100%;
-        height: 180px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3.5rem;
-        position: relative;
-    }
-    .tpl-badge {
-        position: absolute;
-        top: .75rem;
-        right: .75rem;
-        background: #ff6600;
-        color: #fff;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .85rem;
-        opacity: 0;
-        transition: opacity .25s;
-    }
-    .tpl-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
-    .tpl-name { font-size: 1.05rem; font-weight: 700; color: #1a1a1a; margin-bottom: .35rem; }
-    .tpl-desc { font-size: .85rem; color: #666; flex: 1; line-height: 1.5; }
-    .tpl-action {
-        margin-top: 1rem;
-        display: inline-block;
-        padding: .5rem 1rem;
-        border-radius: .5rem;
-        font-size: .85rem;
-        font-weight: 600;
-        text-align: center;
-        border: 1.5px solid #ff6600;
-        color: #ff6600;
-        background: transparent;
-        transition: background .2s, color .2s;
-        cursor: pointer;
-        width: 100%;
-    }
-    .tpl-card.selected .tpl-action,
-    .tpl-action:hover { background: #ff6600; color: #fff; }
-
-    /* Colors for thumbnails */
-    .thumb-modern   { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #495057; }
-    .thumb-corp     { background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 100%); color: #fff; }
-    .thumb-creative { background: linear-gradient(135deg, #fff4eb 0%, #ffe0c7 100%); color: #ff6600; }
-    .thumb-ats      { background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); color: #276749; }
-
-    /* Preview panel */
-    .preview-section { margin-bottom: 3rem; }
-    .preview-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: .75rem;
-    }
-    .preview-header h2 { font-size: 1.25rem; font-weight: 700; color: #1a1a1a; }
-    .preview-frame {
-        background: #fff;
-        border: 2px solid #e5e7eb;
-        border-radius: 1rem;
-        min-height: 400px;
-        overflow: hidden;
-        position: relative;
-    }
-    .preview-frame iframe {
-        width: 100%;
-        min-height: 600px;
-        border: none;
-    }
-    .preview-placeholder {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 400px;
-        color: #999;
-        gap: .75rem;
-    }
-    .preview-placeholder i { font-size: 2.5rem; color: #ccc; }
-
-    .preview-loading {
-        position: absolute;
-        inset: 0;
-        background: rgba(255,255,255,.85);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 5;
-    }
-    .preview-loading .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid #e5e7eb;
-        border-top-color: #ff6600;
-        border-radius: 50%;
-        animation: spin .7s linear infinite;
-    }
+    .tpl-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 1rem; overflow: hidden; transition: border-color .2s, box-shadow .2s, transform .2s; cursor: pointer; }
+    .tpl-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(17, 24, 39, .10); border-color: rgba(255,102,0,.35); }
+    .tpl-card.selected { border-color: #ff6600; box-shadow: 0 0 0 2px rgba(255,102,0,.2), 0 10px 24px rgba(17, 24, 39, .10); }
+    .tpl-thumb-wrap { background: linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%); padding: .75rem; border-bottom: 1px solid #edf2f7; }
+    .tpl-image { width: 100%; height: 182px; object-fit: cover; object-position: top center; border-radius: .6rem; border: 1px solid #dbe4ee; background: #fff; display: block; }
+    .tpl-body { padding: .85rem .9rem; }
+    .tpl-name { font-size: .93rem; font-weight: 700; color: #111827; }
+    .tpl-desc { margin-top: .3rem; font-size: .78rem; color: #6b7280; line-height: 1.4; min-height: 2.2rem; }
+    .tpl-action { margin-top: .6rem; width: 100%; border: 1px solid #ff6600; color: #ff6600; border-radius: .55rem; padding: .45rem .6rem; font-size: .82rem; font-weight: 700; background: transparent; }
+    .tpl-card.selected .tpl-action, .tpl-action:hover { background: #ff6600; color: #fff; }
+    .preview-section { margin-bottom: 2.4rem; }
+    .preview-header h2 { font-size: 1.18rem; font-weight: 700; color: #111827; margin-bottom: .75rem; }
+    .preview-frame { background: #fff; border: 2px solid #e5e7eb; border-radius: 1rem; min-height: 400px; overflow: hidden; position: relative; }
+    .preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; color: #9ca3af; gap: .6rem; }
+    .preview-placeholder i { font-size: 2rem; }
+    .preview-loading { position: absolute; inset: 0; background: rgba(255,255,255,.86); display: flex; align-items: center; justify-content: center; z-index: 3; }
+    .spinner { width: 38px; height: 38px; border: 4px solid #e5e7eb; border-top-color: #ff6600; border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Submit bar */
-    .submit-bar {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin: 2rem 0 1rem;
-    }
-    .btn-primary {
-        background: #ff6600;
-        color: #fff;
-        padding: .75rem 2rem;
-        border-radius: .5rem;
-        font-weight: 700;
-        font-size: 1rem;
-        border: none;
-        cursor: pointer;
-        transition: opacity .2s, transform .1s;
-    }
+    .submit-bar { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0 1rem; }
+    .btn-primary { background: #ff6600; color: #fff; padding: .75rem 2rem; border-radius: .5rem; font-weight: 700; border: none; }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-primary:not(:disabled):hover { opacity: .9; transform: translateY(-1px); }
-    .btn-secondary {
-        background: transparent;
-        color: #ff6600;
-        padding: .75rem 2rem;
-        border-radius: .5rem;
-        font-weight: 600;
-        font-size: 1rem;
-        border: 1.5px solid #ff6600;
-        cursor: pointer;
-        transition: background .2s, color .2s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: .5rem;
-    }
+    .btn-secondary { background: transparent; color: #ff6600; padding: .75rem 2rem; border-radius: .5rem; font-weight: 600; border: 1.5px solid #ff6600; text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; }
     .btn-secondary:hover { background: #ff6600; color: #fff; }
 </style>
 {% endblock %}
@@ -187,33 +38,24 @@
 {% block content %}
 <div class="picker-header">
     <h1>Choose a Template for <span style="color:#ff6600">{{ resume_name }}</span></h1>
-    <p>Select a design, preview your resume, then confirm your choice.</p>
+    <p>Select from 20 professional styles, preview, then confirm your choice.</p>
 </div>
 
-<!-- Template cards -->
 <div class="template-grid" id="templateGrid">
-    {% set cards = [
-        ("modern_minimal",         "Modern Minimal",         template_info.modern_minimal.desc,         "thumb-modern",   "fa-feather"),
-        ("corporate_professional", "Corporate Professional", template_info.corporate_professional.desc, "thumb-corp",     "fa-briefcase"),
-        ("creative_designer",      "Creative Designer",      template_info.creative_designer.desc,      "thumb-creative", "fa-palette"),
-        ("simple_ats",             "Simple ATS",             template_info.simple_ats.desc,             "thumb-ats",      "fa-file-lines"),
-    ] %}
-    {% for key, label, desc, thumb_cls, icon in cards %}
-    <div class="tpl-card" data-template="{{ key }}" onclick="selectTemplate('{{ key }}')">
-        <div class="tpl-thumb {{ thumb_cls }}">
-            <i class="fa-solid {{ icon }}"></i>
-            <span class="tpl-badge"><i class="fa-solid fa-check" style="font-size:.75rem"></i></span>
+    {% for tpl in template_catalog %}
+    <div class="tpl-card {% if tpl.id == selected_template %}selected{% endif %}" data-template="{{ tpl.id }}" onclick="selectTemplate('{{ tpl.id }}')">
+        <div class="tpl-thumb-wrap">
+            <img class="tpl-image" src="{{ url_for('dashboard.template_preview', template_name=tpl.id) }}" alt="{{ tpl.label }} preview" loading="lazy">
         </div>
         <div class="tpl-body">
-            <div class="tpl-name">{{ label }}</div>
-            <div class="tpl-desc">{{ desc }}</div>
+            <div class="tpl-name">{{ tpl.label }}</div>
+            <div class="tpl-desc">{{ tpl.desc }}</div>
             <button type="button" class="tpl-action">Preview</button>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- Preview panel -->
 <div class="preview-section" id="previewSection" style="display:none;">
     <div class="preview-header">
         <h2><i class="fa-solid fa-eye" style="color:#ff6600; margin-right:.5rem"></i>Live Preview — <span id="previewLabel">Template</span></h2>
@@ -226,7 +68,6 @@
     </div>
 </div>
 
-<!-- Submit bar -->
 <div class="submit-bar">
     <a href="{{ url_for('resume.builder') }}" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Editor</a>
     <form method="POST" action="{{ url_for('resume.template_select') }}" id="selectForm">
@@ -243,7 +84,7 @@
 <script>
 (function() {
     const csrfToken = "{{ csrf_token() }}";
-    let current = null;
+    let current = "{{ selected_template or '' }}";
     const cards = document.querySelectorAll('.tpl-card');
     const previewSection = document.getElementById('previewSection');
     const previewFrame = document.getElementById('previewFrame');
@@ -252,28 +93,18 @@
     const confirmBtn = document.getElementById('confirmBtn');
     const selectedInput = document.getElementById('selectedTemplate');
     const labelMap = {
-        modern_minimal: 'Modern Minimal',
-        corporate_professional: 'Corporate Professional',
-        creative_designer: 'Creative Designer',
-        simple_ats: 'Simple ATS'
+        {% for tpl in template_catalog %}
+        "{{ tpl.id }}": "{{ tpl.label }}"{% if not loop.last %},{% endif %}
+        {% endfor %}
     };
 
-    window.selectTemplate = function(name) {
-        if (current === name) return;
+    window.selectTemplate = function(name, shouldScroll = true) {
         current = name;
-
-        // highlight card
         cards.forEach(c => c.classList.toggle('selected', c.dataset.template === name));
-
-        // enable confirm
         selectedInput.value = name;
         confirmBtn.disabled = false;
-
-        // show preview section
         previewSection.style.display = '';
         previewLabel.textContent = labelMap[name] || name;
-
-        // show loading
         previewPlaceholder.style.display = 'none';
         let loader = previewFrame.querySelector('.preview-loading');
         if (!loader) {
@@ -283,12 +114,8 @@
             previewFrame.appendChild(loader);
         }
         loader.style.display = 'flex';
-
-        // remove old iframe
         const oldIframe = previewFrame.querySelector('iframe');
         if (oldIframe) oldIframe.remove();
-
-        // fetch preview
         fetch("{{ url_for('resume.template_preview') }}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
@@ -311,8 +138,6 @@
             doc.open();
             doc.write(data.html);
             doc.close();
-
-            // auto-resize iframe
             setTimeout(() => {
                 try {
                     const h = doc.body.scrollHeight + 40;
@@ -325,16 +150,21 @@
             previewPlaceholder.style.display = 'flex';
             previewPlaceholder.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#ff6600"></i><span>Preview failed. Please try again.</span>';
         });
-
-        // smooth scroll to preview
-        setTimeout(() => previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        if (shouldScroll) {
+            setTimeout(() => previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
     };
 
-    // Form submission feedback
     document.getElementById('selectForm').addEventListener('submit', function() {
         confirmBtn.disabled = true;
         confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:.4rem"></i> Creating...';
     });
+
+    if (current) {
+        selectedInput.value = current;
+        confirmBtn.disabled = false;
+        selectTemplate(current, false);
+    }
 })();
 </script>
 {% endblock %}

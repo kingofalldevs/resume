@@ -165,15 +165,93 @@
         box-shadow: 0 3px 12px rgba(17, 24, 39, 0.05);
         text-align: center;
     }
+    .tpl-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 0.9rem;
+    }
+    .tpl-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 3px 12px rgba(17, 24, 39, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .tpl-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+        border-color: rgba(255, 102, 0, 0.35);
+    }
+    .tpl-card.active {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.18), 0 10px 24px rgba(17, 24, 39, 0.12);
+    }
+    .tpl-shot-wrap {
+        background: linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 0.8rem;
+        border-bottom: 1px solid #eef2f7;
+    }
+    .tpl-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        object-position: top center;
+        border-radius: 10px;
+        border: 1px solid #dbe1e8;
+        display: block;
+        background: #fff;
+    }
+    .tpl-meta {
+        padding: 0.85rem 0.9rem;
+    }
+    .tpl-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #111827;
+    }
+    .tpl-desc {
+        margin-top: 0.3rem;
+        font-size: 0.78rem;
+        color: #6b7280;
+        line-height: 1.45;
+        min-height: 2.2rem;
+    }
+    .tpl-btn {
+        margin-top: 0.55rem;
+        width: 100%;
+        border: 1px solid #ff6600;
+        color: #ff6600;
+        background: transparent;
+        padding: 0.5rem 0.7rem;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+    .tpl-btn:hover {
+        background: #ff6600;
+        color: #fff;
+    }
+    .tpl-card.active .tpl-btn {
+        background: #ff6600;
+        color: #fff;
+    }
     @media (min-width: 768px) {
         .dash-hero {
             padding: 2.35rem 2.1rem;
+        }
+        .tpl-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         .dash-resume-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
     @media (min-width: 1100px) {
+        .tpl-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
         .dash-resume-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
@@ -243,6 +321,31 @@
                 <h3 class="dash-action-title">Expert Consultation</h3>
                 <p class="dash-action-desc">Receive focused feedback on resume quality, positioning, and job-readiness.</p>
             </a>
+        </div>
+    </section>
+
+    <section>
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="dash-section-title mb-0">Resume Templates (20 Styles)</h2>
+            <span class="text-xs sm:text-sm text-gray-500">Select a default style before creating</span>
+        </div>
+        <div class="tpl-grid">
+            {% for tpl in template_catalog %}
+            <article class="tpl-card {% if selected_template == tpl.id %}active{% endif %}">
+                <div class="tpl-shot-wrap">
+                    <img class="tpl-image" src="{{ url_for('dashboard.template_preview', template_name=tpl.id) }}" alt="{{ tpl.label }} template preview" loading="lazy">
+                </div>
+                <div class="tpl-meta">
+                    <h3 class="tpl-title">{{ tpl.label }}</h3>
+                    <p class="tpl-desc">{{ tpl.desc }}</p>
+                    <form method="POST" action="{{ url_for('dashboard.select_template') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="template_name" value="{{ tpl.id }}">
+                        <button type="submit" class="tpl-btn">{% if selected_template == tpl.id %}Selected{% else %}Use This Template{% endif %}</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
         </div>
     </section>
 
