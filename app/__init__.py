@@ -6,7 +6,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user, login_user
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -81,6 +81,33 @@ def load_user(user_id):
         # or an invalid user id is present in session.
         db.session.rollback()
         return None
+
+
+def _get_or_create_dashboard_user():
+    """Return the default auto-login user for dashboard-first mode."""
+    email = (app.config.get("AUTO_LOGIN_EMAIL") or "dashboard@resumeghana.local").strip().lower()
+    full_name = (app.config.get("AUTO_LOGIN_NAME") or "Dashboard User").strip()
+    try:
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return user
+        user = User(full_name=full_name, email=email, password_hash="auth_disabled")
+        db.session.add(user)
+        db.session.commit()
+        return user
+    except SQLAlchemyError:
+        db.session.rollback()
+        return None
+
+
+@app.before_request
+def _auto_login_dashboard_user():
+    """Silently authenticate a default user so dashboard is always accessible."""
+    if current_user.is_authenticated:
+        return
+    user = _get_or_create_dashboard_user()
+    if user:
+        login_user(user, remember=True)
 
 
 # Register blueprints

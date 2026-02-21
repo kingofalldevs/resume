@@ -118,9 +118,9 @@ def _resolve_pending_user(pending: dict):
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
-    """User registration."""
-    if current_user.is_authenticated:
-        return redirect(url_for("dashboard.index"))
+    """Signup is disabled; send users to dashboard."""
+    flash("Sign up is disabled. Welcome to your dashboard.", "info")
+    return redirect(url_for("dashboard.index"))
 
     if request.method == "POST":
         # Defensive reset in case a previous DB error left session aborted.
@@ -204,9 +204,9 @@ def signup():
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """User login."""
-    if request.method == "GET" and current_user.is_authenticated:
-        return redirect(url_for("dashboard.index"))
+    """Login is disabled; send users to dashboard."""
+    flash("Sign in is disabled. Welcome to your dashboard.", "info")
+    return redirect(url_for("dashboard.index"))
 
     if request.method == "POST":
         # Defensive reset in case a previous DB error left session aborted.
@@ -266,65 +266,14 @@ def login():
 
 @auth_bp.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
-    """Verify email OTP after password login."""
-    pending = session.get("pending_login_otp")
-    if not pending:
-        flash("Your login session expired. Please sign in again.", "error")
-        return redirect(url_for("auth.login"))
-
-    now = int(time.time())
-    if now > int(pending.get("expires_at", 0)):
-        session.pop("pending_login_otp", None)
-        flash("OTP expired. Please sign in again.", "error")
-        return redirect(url_for("auth.login"))
-
-    if request.method == "POST":
-        # Defensive reset in case previous requests left session in bad state.
-        db.session.rollback()
-        code = (request.form.get("otp", "") or "").strip()
-        if not code.isdigit() or len(code) != 6:
-            flash("Enter a valid 6-digit code.", "error")
-            return render_template("auth/verify_otp.html", masked_email=_mask_email(pending.get("email", "")))
-
-        expected = pending.get("otp_hash", "")
-        actual = _otp_hash(pending.get("email", ""), code)
-        if not hmac.compare_digest(expected, actual):
-            pending["attempts_left"] = int(pending.get("attempts_left", 1)) - 1
-            session["pending_login_otp"] = pending
-            if pending["attempts_left"] <= 0:
-                session.pop("pending_login_otp", None)
-                flash("Too many invalid attempts. Please sign in again.", "error")
-                return redirect(url_for("auth.login"))
-            flash(f"Invalid code. {pending['attempts_left']} attempt(s) left.", "error")
-            return render_template("auth/verify_otp.html", masked_email=_mask_email(pending.get("email", "")))
-
-        try:
-            user = _resolve_pending_user(pending)
-        except SQLAlchemyError:
-            db.session.rollback()
-            current_app.logger.exception("Verify OTP user lookup failed")
-            flash("Database error during verification. Please try again.", "error")
-            return redirect(url_for("auth.login"))
-        if not user:
-            session.pop("pending_login_otp", None)
-            flash("Account not found. Please sign in again.", "error")
-            return redirect(url_for("auth.login"))
-
-        login_user(user, remember=bool(pending.get("remember", False)))
-        next_url = pending.get("next_url") or url_for("dashboard.index")
-        session.pop("pending_login_otp", None)
-        if pending.get("source") == "signup":
-            # Best-effort welcome/confirmation mail for new verified accounts.
-            send_signup_confirmation_email(user.email, getattr(user, "full_name", ""))
-        return redirect(next_url)
-
-    return render_template("auth/verify_otp.html", masked_email=_mask_email(pending.get("email", "")))
+    """OTP verification is disabled; send users to dashboard."""
+    flash("Verification is disabled. Welcome to your dashboard.", "info")
+    return redirect(url_for("dashboard.index"))
 
 
 @auth_bp.route("/logout")
 @login_required
 def logout():
-    """User logout."""
-    logout_user()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("landing.index"))
+    """Logout is disabled in dashboard-only mode."""
+    flash("Logout is disabled in dashboard-only mode.", "info")
+    return redirect(url_for("dashboard.index"))

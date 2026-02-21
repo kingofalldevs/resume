@@ -471,7 +471,5 @@ def download(id):
 # Legacy route for PDF upload from landing
 @resume_bp.route("/build/upload", methods=["POST"])
 def build_upload():
-    """Handle PDF upload from landing - redirect to login if needed."""
-    if not current_user.is_authenticated:
-        return redirect(url_for("auth.login", next=url_for("resume.builder")))
+    """Handle PDF upload from landing."""
     return redirect(url_for("resume.builder"))
