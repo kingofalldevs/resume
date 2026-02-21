@@ -148,6 +148,19 @@ def _paystack_verify(reference: str):
     return body.get("data", {})
 
 
+def _build_download_response(resume_data: dict, resume_id: int):
+    """Create downloadable HTML response for a resume."""
+    filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
+    filename = f"{filename_base}_resume.html"
+    template_name = resume_data.get("template_name", "modern_minimal")
+    html = build_resume_html(resume_data, template_name)
+    response = make_response(html)
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    response.headers["X-Resume-Id"] = str(resume_id)
+    return response
+
+
 @resume_bp.route("/build", methods=["GET", "POST"])
 @login_required
 def builder():
@@ -301,7 +314,10 @@ def save():
 @resume_bp.route("/checkout")
 @login_required
 def checkout():
-    """Show pricing + resume preview before Paystack payment."""
+    """Show pricing + resume preview before paid actions.
+
+    Download is now free and bypasses payment.
+    """
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("No resume data available. Please build your resume first.", "error")
@@ -310,6 +326,11 @@ def checkout():
     action = request.args.get("action", "download").strip().lower()
     if action not in {"save", "download"}:
         action = "download"
+
+    if action == "download":
+        resume = _save_resume_record(resume_data, current_user.id)
+        flash("Download is now free. Your resume is ready.", "success")
+        return _build_download_response(resume_data, resume.id)
 
     template_name = resume_data.get("template_name", "modern_minimal")
     html = build_resume_html(resume_data, template_name)
@@ -326,7 +347,10 @@ def checkout():
 @resume_bp.route("/checkout/start", methods=["POST"])
 @login_required
 def checkout_start():
-    """Initialize Paystack transaction and redirect to hosted payment page."""
+    """Initialize Paystack for paid actions.
+
+    Download is now free and bypasses payment.
+    """
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("No resume data available. Please build your resume first.", "error")
@@ -335,6 +359,11 @@ def checkout_start():
     action = request.form.get("action", "download").strip().lower()
     if action not in {"save", "download"}:
         action = "download"
+
+    if action == "download":
+        resume = _save_resume_record(resume_data, current_user.id)
+        flash("Download is now free. Your resume is ready.", "success")
+        return _build_download_response(resume_data, resume.id)
 
     email = (resume_data.get("email") or current_user.email or "").strip()
     if not email:
@@ -406,16 +435,8 @@ def checkout_callback():
         flash("Payment successful. Resume saved to dashboard.", "success")
         return redirect(url_for("resume.view", id=resume.id))
 
-    # action == "download": return downloadable HTML resume (and keep a saved copy)
-    filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
-    filename = f"{filename_base}_resume.html"
-    template_name = resume_data.get("template_name", "modern_minimal")
-    html = build_resume_html(resume_data, template_name)
-    response = make_response(html)
-    response.headers["Content-Type"] = "text/html; charset=utf-8"
-    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-    response.headers["X-Resume-Id"] = str(resume.id)
-    return response
+    # action == "download": retained for compatibility
+    return _build_download_response(resume_data, resume.id)
 
 
 def _resume_to_data(resume):
