@@ -170,6 +170,9 @@
         grid-template-columns: repeat(1, minmax(0, 1fr));
         gap: 0.9rem;
     }
+    .tpl-hidden {
+        display: none;
+    }
     .tpl-card {
         background: #fff;
         border: 1px solid #e5e7eb;
@@ -234,6 +237,25 @@
         color: #fff;
     }
     .tpl-card.active .tpl-btn {
+        background: #ff6600;
+        color: #fff;
+    }
+    .tpl-toggle-wrap {
+        margin-top: 0.9rem;
+        display: flex;
+        justify-content: center;
+    }
+    .tpl-toggle-btn {
+        border: 1px solid #ff6600;
+        color: #ff6600;
+        background: #fff;
+        border-radius: 999px;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.84rem;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+    .tpl-toggle-btn:hover {
         background: #ff6600;
         color: #fff;
     }
@@ -331,7 +353,7 @@
         </div>
         <div class="tpl-grid">
             {% for tpl in template_catalog %}
-            <article class="tpl-card {% if selected_template == tpl.id %}active{% endif %}">
+            <article class="tpl-card {% if selected_template == tpl.id %}active{% endif %} {% if loop.index > 5 %}tpl-hidden extra-template{% endif %}">
                 <div class="tpl-shot-wrap">
                     <img class="tpl-image" src="{{ url_for('dashboard.template_preview', template_name=tpl.id) }}" alt="{{ tpl.label }} template preview" loading="lazy">
                 </div>
@@ -347,6 +369,11 @@
             </article>
             {% endfor %}
         </div>
+        {% if template_catalog|length > 5 %}
+        <div class="tpl-toggle-wrap">
+            <button type="button" id="template-toggle-btn" class="tpl-toggle-btn">Show more templates</button>
+        </div>
+        {% endif %}
     </section>
 
     <section>
@@ -388,4 +415,22 @@
         {% endif %}
     </section>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const btn = document.getElementById("template-toggle-btn");
+        if (!btn) return;
+        const extras = Array.from(document.querySelectorAll(".extra-template"));
+        let expanded = false;
+        btn.addEventListener("click", function () {
+            expanded = !expanded;
+            extras.forEach(function (card) {
+                card.classList.toggle("tpl-hidden", !expanded);
+            });
+            btn.textContent = expanded ? "Show fewer templates" : "Show more templates";
+        });
+    })();
+</script>
 {% endblock %}
