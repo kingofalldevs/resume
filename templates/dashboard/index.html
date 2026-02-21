@@ -2,8 +2,11 @@
 
 {% block extra_css %}
 <style>
+    main.max-w-6xl {
+        max-width: 90vw !important;
+    }
     .dashboard-shell {
-        max-width: 1150px;
+        max-width: 100%;
         margin: 0 auto;
     }
     .dash-hero {
@@ -15,6 +18,30 @@
         color: #111827;
         border: 1px solid rgba(255, 102, 0, 0.22);
         box-shadow: 0 12px 35px rgba(255, 102, 0, 0.12);
+    }
+    .dash-hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        align-items: center;
+    }
+    .dash-hero-copy {
+        position: relative;
+        z-index: 1;
+    }
+    .dash-hero-media {
+        position: relative;
+        z-index: 1;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 102, 0, 0.28);
+        background: #fff3e7;
+    }
+    .dash-hero-media img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
     }
     .dash-hero::after {
         content: "";
@@ -172,9 +199,6 @@
         grid-template-columns: repeat(1, minmax(0, 1fr));
         gap: 0.9rem;
     }
-    .tpl-hidden {
-        display: none;
-    }
     .tpl-card {
         background: #fff;
         border: 1px solid #e5e7eb;
@@ -261,9 +285,18 @@
         background: #ff6600;
         color: #fff;
     }
+    @media (max-width: 767px) {
+        .extra-template.tpl-collapsed {
+            display: none;
+        }
+    }
     @media (min-width: 768px) {
         .dash-hero {
             padding: 2.35rem 2.1rem;
+        }
+        .dash-hero-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.25rem;
         }
         .tpl-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -286,19 +319,26 @@
 {% block content %}
 <div class="dashboard-shell space-y-7">
     <section class="dash-hero">
-        <div class="dash-eyebrow">
-            <i class="fas fa-briefcase"></i>
-            Career Dashboard
-        </div>
-        <h1 class="dash-title">Welcome, {{ ((current_user.full_name or '').strip().split() or ['Professional'])[0] }}. Build stronger applications with confidence.</h1>
-        <p class="dash-sub">Create polished resumes, request interview preparation, and get expert support from one professional workspace.</p>
-        <div class="dash-hero-actions">
-            <a href="{{ url_for('resume.builder') }}" class="dash-btn-primary rounded-xl px-5 py-3 font-semibold transition" data-show-loading>
-                <i class="fas fa-plus mr-2"></i>Create Resume
-            </a>
-            <a href="{{ url_for('dashboard.book_interview') }}" class="dash-btn-secondary rounded-xl px-5 py-3 font-semibold transition">
-                <i class="fas fa-calendar-check mr-2"></i>Book Interview
-            </a>
+        <div class="dash-hero-grid">
+            <div class="dash-hero-copy">
+                <div class="dash-eyebrow">
+                    <i class="fas fa-briefcase"></i>
+                    Career Dashboard
+                </div>
+                <h1 class="dash-title">Welcome, {{ ((current_user.full_name or '').strip().split() or ['Professional'])[0] }}. Build stronger applications with confidence.</h1>
+                <p class="dash-sub">Create polished resumes, request interview preparation, and get expert support from one professional workspace.</p>
+                <div class="dash-hero-actions">
+                    <a href="{{ url_for('resume.builder') }}" class="dash-btn-primary rounded-xl px-5 py-3 font-semibold transition" data-show-loading>
+                        <i class="fas fa-plus mr-2"></i>Create Resume
+                    </a>
+                    <a href="{{ url_for('dashboard.book_interview') }}" class="dash-btn-secondary rounded-xl px-5 py-3 font-semibold transition">
+                        <i class="fas fa-calendar-check mr-2"></i>Book Interview
+                    </a>
+                </div>
+            </div>
+            <div class="dash-hero-media">
+                <img src="{{ url_for('static', filename='experts_review_resume.png') }}" alt="Experts review your resume">
+            </div>
         </div>
     </section>
 
@@ -330,7 +370,7 @@
         </div>
         <div class="tpl-grid">
             {% for tpl in template_catalog %}
-            <article class="tpl-card {% if selected_template == tpl.id %}active{% endif %} {% if loop.index > 5 %}tpl-hidden extra-template{% endif %}">
+            <article class="tpl-card {% if selected_template == tpl.id %}active{% endif %} {% if loop.index > 5 %}extra-template{% endif %}">
                 <div class="tpl-shot-wrap">
                     <img class="tpl-image" src="{{ url_for('dashboard.template_preview', template_name=tpl.id) }}" alt="{{ tpl.label }} template preview" loading="lazy">
                 </div>
@@ -347,7 +387,7 @@
             {% endfor %}
         </div>
         {% if template_catalog|length > 5 %}
-        <div class="tpl-toggle-wrap">
+        <div class="tpl-toggle-wrap" id="template-toggle-wrap">
             <button type="button" id="template-toggle-btn" class="tpl-toggle-btn">Show more templates</button>
         </div>
         {% endif %}
@@ -398,16 +438,34 @@
 <script>
     (function () {
         const btn = document.getElementById("template-toggle-btn");
-        if (!btn) return;
+        const wrap = document.getElementById("template-toggle-wrap");
+        if (!btn || !wrap) return;
         const extras = Array.from(document.querySelectorAll(".extra-template"));
         let expanded = false;
-        btn.addEventListener("click", function () {
-            expanded = !expanded;
+
+        function applyTemplateVisibility() {
+            const isMobile = window.innerWidth < 768;
+            if (!isMobile) {
+                wrap.style.display = "none";
+                extras.forEach(function (card) {
+                    card.classList.remove("tpl-collapsed");
+                });
+                return;
+            }
+            wrap.style.display = "flex";
             extras.forEach(function (card) {
-                card.classList.toggle("tpl-hidden", !expanded);
+                card.classList.toggle("tpl-collapsed", !expanded);
             });
             btn.textContent = expanded ? "Show fewer templates" : "Show more templates";
+        }
+
+        btn.addEventListener("click", function () {
+            expanded = !expanded;
+            applyTemplateVisibility();
         });
+
+        window.addEventListener("resize", applyTemplateVisibility);
+        applyTemplateVisibility();
     })();
 </script>
 {% endblock %}
