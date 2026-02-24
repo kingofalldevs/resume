@@ -128,7 +128,7 @@
     }
     .tpl-image {
         width: 100%;
-        height: 280px;
+        height: 360px;
         object-fit: cover;
         object-position: top center;
         border-radius: 10px;
@@ -196,7 +196,7 @@
             display: none;
         }
         .tpl-image {
-            height: 230px;
+            height: 280px;
         }
     }
     @media (min-width: 768px) {
@@ -220,10 +220,14 @@
 
 {% block content %}
 <div class="dashboard-shell space-y-7">
+    <section class="text-center mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">Create a free resume in minutes.</h1>
+        <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">Choose a resume template and create a resume in minutes. Download for free! Includes AI writing assistant.</p>
+    </section>
     <section>
         <div class="flex justify-between items-center mb-3">
             <h2 class="dash-section-title mb-0">Resume Templates (20 Styles)</h2>
-            <span class="text-xs sm:text-sm text-gray-500">Select a default style before creating</span>
+            <span class="text-xs sm:text-sm text-gray-500">Select a style, then click Use This Template</span>
         </div>
         <div class="tpl-grid">
             {% for tpl in template_catalog %}
@@ -237,7 +241,7 @@
                     <form method="POST" action="{{ url_for('dashboard.select_template') }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="template_name" value="{{ tpl.id }}">
-                        <button type="submit" class="tpl-btn">{% if selected_template == tpl.id %}Selected{% else %}Use This Template{% endif %}</button>
+                        <button type="submit" class="tpl-btn">{% if selected_template == tpl.id %}Selected{% else %}USE THIS TEMPLATE{% endif %}</button>
                     </form>
                 </div>
             </article>

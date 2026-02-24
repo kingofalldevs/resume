@@ -46,7 +46,7 @@ def _svg_text(x, y, text, size=12, weight=400, fill="#111827", anchor="start"):
     return f'<text x="{x}" y="{y}" font-size="{size}" font-weight="{weight}" fill="{fill}" text-anchor="{anchor}" font-family="Inter, Arial, sans-serif">{html.escape(text)}</text>'
 
 
-def _svg_lines(x, y, widths, color="#9aa6b2", height=6, gap=8, rx=3):
+def _svg_lines(x, y, widths, color="#9aa6b2", height=6, gap=10, rx=3):
     rows = []
     for w in widths:
         rows.append(_svg_rect(x, y, w, height, color, rx=rx))
@@ -54,7 +54,7 @@ def _svg_lines(x, y, widths, color="#9aa6b2", height=6, gap=8, rx=3):
     return "".join(rows), y
 
 
-def _svg_text_lines(x, y, lines, size=10, fill="#64748b", gap=6):
+def _svg_text_lines(x, y, lines, size=24, fill="#64748b", gap=10):
     """Draw multiple lines of readable text; return final y."""
     out = []
     for line in lines:
@@ -63,18 +63,28 @@ def _svg_text_lines(x, y, lines, size=10, fill="#64748b", gap=6):
     return "".join(out), y
 
 
-# Sample resume content so previews show real-looking text
-_PREVIEW_SUMMARY = "Results-driven operations leader with 10+ years of experience in process improvement and team management."
-_PREVIEW_SUMMARY2 = "Proven track record in cost reduction and operational excellence across FMCG and logistics sectors."
-_PREVIEW_EXP_TITLE = "Operations Manager · ABC Company Ltd"
+# Reference-style placeholder content (like "Clean", "Impact", "Classic" examples)
+_PREVIEW_NAME = "YOUR NAME"
+_PREVIEW_JOB_TITLE = "JOB TITLE"
+_PREVIEW_CONTACT = "Address, City  •  Phone  •  email@example.com"
+_PREVIEW_SUMMARY_LINE1 = "Click or tap here to edit text or use AI writing assistant."
+_PREVIEW_SUMMARY_LINE2 = "Summarize your experience and what you bring to the role in 2–3 sentences."
+_PREVIEW_EXP_JOB = "Job Title"
+_PREVIEW_EXP_COMBO = "Company - City, ST"
+_PREVIEW_EXP_DATES = "Jan 2023 - Jan 2024"
 _PREVIEW_EXP_BULLETS = [
-    "Led a team of 25; reduced operational costs by 18% in 12 months.",
-    "Implemented new inventory system cutting waste by 22%.",
-    "Collaborated with HR on recruitment and performance reviews.",
+    "• Describe your key achievements and responsibilities here.",
+    "• Use bullet points and numbers where possible.",
+    "• Keep each point clear and impactful.",
 ]
-_PREVIEW_EDU = "MBA, University of Ghana · BSc Business Administration, KNUST"
-_PREVIEW_SKILLS = ["Strategic Planning", "Budget Management", "Team Leadership", "Process Improvement", "Stakeholder Engagement"]
-_PREVIEW_CERTS = "PMP · Six Sigma Green Belt · Health & Safety Level 3"
+_PREVIEW_EDU_DEGREE = "Degree Title"
+_PREVIEW_EDU_SCHOOL = "University Name - City, ST"
+_PREVIEW_EDU_DATES = "Jan 2020 - Jan 2023"
+_PREVIEW_SKILLS = ["Microsoft Word Expert", "Microsoft PowerPoint Advanced"]
+_PREVIEW_LANGUAGES = ["Spanish", "Mandarin Chinese"]
+_PREVIEW_LANGUAGES_PROF = ["Spanish (advanced)", "Mandarin Chinese (intermediate)"]
+_PREVIEW_REFERENCES = "Available on request"
+_PREVIEW_WEB_SOCIAL = "LinkedIn  •  Twitter"
 
 
 def _build_template_preview_svg(template_name: str, label: str, index: int) -> str:
@@ -105,188 +115,250 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
     if layout == "sidebar":
         svg.append(_svg_rect(22, 20, 230, 1240, primary, rx=14))
         svg.append(_svg_rect(252, 20, 626, 1240, "#ffffff", rx=0))
-        svg.append(_svg_text(54, 88, "AKOSUA", size=27, weight=800, fill="#ffffff"))
-        svg.append(_svg_text(54, 120, "MENSAH", size=27, weight=800, fill="#ffffff"))
-        svg.append(_svg_text(54, 148, "Senior Operations Manager", size=12, fill="#dbeafe"))
-        svg.append(_svg_text(54, 170, safe_label, size=11, fill="#e2e8f0"))
-        svg.append(_svg_rect(54, 202, 165, 1, "#dbeafe"))
-        svg.append(_svg_text(54, 230, "CONTACT", size=11, weight=700, fill="#ffffff"))
-        svg.append(_svg_text(54, 248, "Accra, Ghana", size=10, fill="#cbd5e1"))
-        svg.append(_svg_text(54, 264, "+233 XX XXX XXXX", size=10, fill="#e2e8f0"))
-        svg.append(_svg_text(54, 280, "you@email.com", size=10, fill="#cbd5e1"))
-        svg.append(_svg_text(54, 316, "SKILLS", size=11, weight=700, fill="#ffffff"))
-        for i, sk in enumerate(_PREVIEW_SKILLS[:5]):
-            svg.append(_svg_text(54, 334 + i * 18, sk, size=10, fill="#e2e8f0"))
-        svg.append(_svg_text(286, 84, "PROFESSIONAL SUMMARY", size=11, weight=700, fill=primary))
-        txt, y = _svg_text_lines(286, 98, [_PREVIEW_SUMMARY[:70], _PREVIEW_SUMMARY2[:68]], size=10, fill=muted, gap=8)
+        # Initials circle (Impact-style)
+        svg.append(_svg_rect(54, 48, 52, 52, "#ffffff", rx=26))
+        svg.append(_svg_text(80, 82, "YN", size=24, weight=700, fill=primary, anchor="middle"))
+        svg.append(_svg_text(54, 118, _PREVIEW_NAME, size=24, weight=700, fill="#ffffff"))
+        svg.append(_svg_text(54, 138, _PREVIEW_JOB_TITLE, size=15, fill="#dbeafe"))
+        svg.append(_svg_rect(54, 158, 165, 1, "#dbeafe"))
+        svg.append(_svg_text(54, 182, "SKILLS", size=15, weight=700, fill="#ffffff"))
+        for i, sk in enumerate(_PREVIEW_SKILLS):
+            svg.append(_svg_text(54, 200 + i * 24, sk, size=24, fill="#e2e8f0"))
+        svg.append(_svg_text(54, 244, "LANGUAGES", size=15, weight=700, fill="#ffffff"))
+        for i, lang in enumerate(_PREVIEW_LANGUAGES):
+            svg.append(_svg_text(54, 262 + i * 24, lang, size=24, fill="#e2e8f0"))
+        svg.append(_svg_text(54, 298, "WEB & SOCIAL", size=15, weight=700, fill="#ffffff"))
+        svg.append(_svg_text(54, 316, _PREVIEW_WEB_SOCIAL[:28], size=24, fill="#cbd5e1"))
+        svg.append(_svg_text(54, 342, "REFERENCES", size=15, weight=700, fill="#ffffff"))
+        svg.append(_svg_text(54, 360, _PREVIEW_REFERENCES, size=24, fill="#e2e8f0"))
+        svg.append(_svg_text(286, 84, "SUMMARY", size=15, weight=700, fill=primary))
+        txt, y = _svg_text_lines(286, 98, [_PREVIEW_SUMMARY_LINE1[:62], _PREVIEW_SUMMARY_LINE2[:60]], size=24, fill=muted, gap=10)
         svg.append(txt)
-        svg.append(_svg_text(286, y + 16, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 32
-        svg.append(_svg_text(286, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
-        y += 14
-        txt, y = _svg_text_lines(286, y, _PREVIEW_EXP_BULLETS, size=9, fill=muted, gap=6)
+        svg.append(_svg_text(286, y + 22, "EXPERIENCE", size=15, weight=700, fill=primary))
+        y += 40
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(286, y, _PREVIEW_EXP_BULLETS[:2], size=17, fill=muted, gap=6)
         svg.append(txt)
-        y += 14
-        svg.append(_svg_text(286, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(286, y, _PREVIEW_EDU[:72], size=10, fill=muted))
-        y += 44
-        svg.append(_svg_text(286, y, "PROJECTS", size=11, weight=700, fill=primary))
-        y += 12
-        svg.append(_svg_text(286, y, "Inventory & process redesign", size=10, weight=600, fill=accent))
-        y += 14
-        svg.append(_svg_text(286, y, "Led cross-functional project; delivered 15% efficiency gain.", size=9, fill=muted))
-        y += 24
-        svg.append(_svg_text(286, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 12
-        svg.append(_svg_text(286, y, _PREVIEW_CERTS, size=10, fill=muted))
+        y += 26
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(286, y, "EDUCATION", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EDU_DEGREE, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EDU_SCHOOL, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(286, y, _PREVIEW_EDU_DATES, size=24, fill=muted))
 
     elif layout == "split":
         svg.append(_svg_rect(22, 20, 856, 130, primary, rx=14))
-        svg.append(_svg_text(56, 90, "AKOSUA MENSAH", size=34, weight=800, fill="#ffffff"))
-        svg.append(_svg_text(56, 122, "Senior Operations Manager", size=15, fill="#eef2ff"))
-        svg.append(_svg_text(56, 145, safe_label, size=12, fill="#e2e8f0"))
+        svg.append(_svg_text(56, 90, _PREVIEW_NAME, size=36, weight=800, fill="#ffffff"))
+        svg.append(_svg_text(56, 118, _PREVIEW_JOB_TITLE, size=24, fill="#eef2ff"))
+        svg.append(_svg_text(56, 138, _PREVIEW_CONTACT[:55], size=24, fill="#e2e8f0"))
         svg.append(_svg_rect(56, 182, 372, 1050, "#ffffff", rx=10, stroke="#e2e8f0"))
         svg.append(_svg_rect(448, 182, 396, 1050, "#ffffff", rx=10, stroke="#e2e8f0"))
-        svg.append(_svg_text(78, 216, "PROFILE", size=11, weight=700, fill=primary))
-        txt, y = _svg_text_lines(78, 230, [_PREVIEW_SUMMARY[:52], _PREVIEW_SUMMARY2[:50]], size=10, fill=muted, gap=8)
+        svg.append(_svg_text(78, 216, "SUMMARY", size=15, weight=700, fill=primary))
+        txt, y = _svg_text_lines(78, 230, [_PREVIEW_SUMMARY_LINE1[:48], _PREVIEW_SUMMARY_LINE2[:46]], size=24, fill=muted, gap=10)
         svg.append(txt)
-        svg.append(_svg_text(78, y + 20, "SKILLS", size=11, weight=700, fill=primary))
-        y += 36
+        svg.append(_svg_text(78, y + 26, "SKILLS", size=15, weight=700, fill=primary))
+        y += 44
         for sk in _PREVIEW_SKILLS:
-            svg.append(_svg_text(78, y, sk, size=10, fill=ink))
-            y += 16
-        svg.append(_svg_text(78, y + 4, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 20
-        svg.append(_svg_text(78, y, _PREVIEW_CERTS, size=10, fill=muted))
-        y += 28
-        svg.append(_svg_text(78, y, "TOOLS", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(78, y, "SAP · Excel · MS Project", size=10, fill=muted))
-        svg.append(_svg_text(470, 216, "EXPERIENCE", size=11, weight=700, fill=primary))
+            svg.append(_svg_text(78, y, sk, size=24, fill=ink))
+            y += 22
+        svg.append(_svg_text(78, y + 8, "LANGUAGES", size=15, weight=700, fill=primary))
+        y += 26
+        for lang in _PREVIEW_LANGUAGES:
+            svg.append(_svg_text(78, y, lang, size=24, fill=muted))
+            y += 24
+        svg.append(_svg_text(78, y + 8, "REFERENCES", size=15, weight=700, fill=primary))
+        y += 26
+        svg.append(_svg_text(78, y, _PREVIEW_REFERENCES, size=24, fill=muted))
+        svg.append(_svg_text(470, 216, "EXPERIENCE", size=15, weight=700, fill=primary))
         y = 230
-        for _ in range(2):
-            svg.append(_svg_text(470, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
-            y += 14
-            txt, y = _svg_text_lines(470, y, _PREVIEW_EXP_BULLETS[:2], size=9, fill=muted, gap=6)
-            svg.append(txt)
-            y += 18
-        svg.append(_svg_text(470, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(470, y, _PREVIEW_EDU[:58], size=10, fill=muted))
-        y += 56
-        svg.append(_svg_text(470, y, "KEY ACHIEVEMENTS", size=11, weight=700, fill=primary))
-        y += 12
-        svg.append(_svg_text(470, y, "Cost reduction 18% · Team of 25 · Process redesign", size=10, fill=muted))
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(470, y, _PREVIEW_EXP_BULLETS[:2], size=17, fill=muted, gap=6)
+        svg.append(txt)
+        y += 28
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 28
+        svg.append(_svg_text(470, y, "EDUCATION", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EDU_DEGREE, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EDU_SCHOOL, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(470, y, _PREVIEW_EDU_DATES, size=24, fill=muted))
 
     elif layout == "executive":
         svg.append(_svg_rect(22, 20, 856, 160, "#ffffff", rx=14))
         svg.append(_svg_rect(22, 20, 856, 54, primary, rx=14))
-        svg.append(_svg_text(52, 55, safe_label, size=13, weight=700, fill="#ffffff"))
-        svg.append(_svg_text(52, 116, "AKOSUA MENSAH", size=35, weight=800, fill=ink))
-        svg.append(_svg_text(52, 148, "Senior Operations Manager", size=14, fill="#475569"))
+        svg.append(_svg_text(52, 55, safe_label, size=17, weight=700, fill="#ffffff"))
+        svg.append(_svg_text(52, 116, _PREVIEW_NAME, size=36, weight=800, fill=ink))
+        svg.append(_svg_text(52, 148, _PREVIEW_JOB_TITLE, size=24, fill="#475569"))
         svg.append(_svg_rect(620, 92, 228, 70, "#f8fafc", rx=8, stroke="#d9e2ec"))
-        svg.append(_svg_text(640, 108, "Accra, Ghana", size=10, fill="#64748b"))
-        svg.append(_svg_text(640, 124, "+233 XX XXX XXXX", size=10, fill="#64748b"))
-        svg.append(_svg_text(640, 140, "you@email.com", size=10, fill="#64748b"))
+        svg.append(_svg_text(640, 108, "Address, City", size=24, fill="#64748b"))
+        svg.append(_svg_text(640, 124, "Phone", size=24, fill="#64748b"))
+        svg.append(_svg_text(640, 140, "email@example.com", size=24, fill="#64748b"))
         svg.append(_svg_rect(52, 198, 796, 2, accent, rx=1))
-        svg.append(_svg_text(52, 188, "Accra, Ghana  •  +233 XX XXX XXXX  •  you@email.com  •  linkedin.com/in/profile", size=10, fill="#64748b"))
+        svg.append(_svg_text(52, 188, _PREVIEW_CONTACT, size=24, fill="#64748b"))
         y = 228
-        svg.append(_svg_text(52, y, "PROFESSIONAL SUMMARY", size=11, weight=700, fill=primary))
-        y += 14
-        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY, _PREVIEW_SUMMARY2], size=10, fill=muted, gap=8)
+        svg.append(_svg_text(52, y, "SUMMARY", size=15, weight=700, fill=primary))
+        y += 20
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY_LINE1[:78], _PREVIEW_SUMMARY_LINE2[:76]], size=24, fill=muted, gap=10)
         svg.append(txt)
-        y += 18
-        svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
-        y += 14
-        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        y += 24
+        svg.append(_svg_text(52, y, "EXPERIENCE", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS[:2], size=24, fill=muted, gap=6)
         svg.append(txt)
-        y += 16
-        svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EDU, size=10, fill=muted))
-        y += 56
-        svg.append(_svg_text(52, y, "CORE SKILLS", size=11, weight=700, fill=primary))
-        y += 14
+        y += 26
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 30
+        svg.append(_svg_text(52, y, "EDUCATION", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DEGREE, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_SCHOOL, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DATES, size=24, fill=muted))
+        y += 44
+        svg.append(_svg_text(52, y, "SKILLS", size=15, weight=700, fill=primary))
+        y += 20
         for sk in _PREVIEW_SKILLS:
-            svg.append(_svg_text(52, y, sk, size=10, fill=ink))
-            y += 14
-        y += 8
-        svg.append(_svg_text(52, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_CERTS, size=10, fill=muted))
+            svg.append(_svg_text(52, y, sk, size=24, fill=ink))
+            y += 20
+        y += 10
+        svg.append(_svg_text(52, y, "REFERENCES", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_REFERENCES, size=24, fill=muted))
 
     elif layout == "clean":
         svg.append(_svg_rect(22, 20, 856, 1240, "#ffffff", rx=14, stroke="#d6dee8"))
-        svg.append(_svg_text(450, 86, "AKOSUA MENSAH", size=36, weight=800, fill=ink, anchor="middle"))
-        svg.append(_svg_text(450, 114, "Senior Operations Manager", size=14, fill="#475569", anchor="middle"))
-        svg.append(_svg_text(450, 136, safe_label, size=11, fill="#64748b", anchor="middle"))
-        svg.append(_svg_text(450, 151, "Accra • +233 XX XXX XXXX • email@example.com • linkedin.com/in/profile", size=10, fill="#64748b", anchor="middle"))
-        svg.append(_svg_rect(52, 156, 796, 1, accent))
-        y = 188
-        svg.append(_svg_text(52, y, "SUMMARY", size=11, weight=700, fill=primary))
-        y += 14
-        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY[:78], _PREVIEW_SUMMARY2[:76]], size=10, fill=muted, gap=6)
+        svg.append(_svg_text(450, 86, _PREVIEW_NAME, size=42, weight=800, fill=ink, anchor="middle"))
+        svg.append(_svg_text(450, 114, _PREVIEW_JOB_TITLE, size=24, fill="#475569", anchor="middle"))
+        svg.append(_svg_text(450, 134, _PREVIEW_CONTACT[:70], size=24, fill="#64748b", anchor="middle"))
+        svg.append(_svg_rect(52, 148, 796, 1, accent))
+        y = 178
+        svg.append(_svg_text(52, y, "SUMMARY", size=15, weight=700, fill=primary))
+        y += 20
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY_LINE1[:78], _PREVIEW_SUMMARY_LINE2[:76]], size=24, fill=muted, gap=6)
         svg.append(txt)
-        y += 16
-        svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
-        y += 14
-        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        y += 22
+        svg.append(_svg_text(52, y, "EXPERIENCE", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS[:2], size=24, fill=muted, gap=6)
         svg.append(txt)
-        y += 14
-        svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EDU[:75], size=10, fill=muted))
-        y += 36
-        svg.append(_svg_text(52, y, "SKILLS", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, "  ·  ".join(_PREVIEW_SKILLS), size=10, fill=muted))
         y += 28
-        svg.append(_svg_text(52, y, "PROJECTS", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, "Inventory & process redesign — 15% efficiency gain", size=10, fill=muted))
-        y += 28
-        svg.append(_svg_text(52, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_CERTS, size=10, fill=muted))
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS[:2], size=24, fill=muted, gap=6)
+        svg.append(txt)
+        y += 26
+        svg.append(_svg_text(52, y, "EDUCATION", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DEGREE, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_SCHOOL, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DATES, size=24, fill=muted))
+        y += 44
+        svg.append(_svg_text(52, y, "SKILLS", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, "  ·  ".join(_PREVIEW_SKILLS), size=24, fill=muted))
+        y += 34
+        svg.append(_svg_text(52, y, "LANGUAGES", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, "  ·  ".join(_PREVIEW_LANGUAGES_PROF), size=24, fill=muted))
+        y += 34
+        svg.append(_svg_text(52, y, "REFERENCES", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_REFERENCES, size=24, fill=muted))
 
     else:  # topbar
         svg.append(_svg_rect(22, 20, 856, 1240, "#ffffff", rx=14, stroke="#d6dee8"))
         svg.append(_svg_rect(22, 20, 856, 116, primary, rx=14))
-        svg.append(_svg_text(52, 78, "AKOSUA MENSAH", size=32, weight=800, fill="#ffffff"))
-        svg.append(_svg_text(52, 104, "Senior Operations Manager", size=14, fill="#e2e8f0"))
-        svg.append(_svg_text(640, 104, safe_label, size=11, fill="#e2e8f0"))
-        svg.append(_svg_text(52, 122, "Accra • +233 XX XXX XXXX • email@example.com • linkedin.com/in/profile", size=10, fill="#d1d5db"))
+        svg.append(_svg_text(52, 78, _PREVIEW_NAME, size=36, weight=800, fill="#ffffff"))
+        svg.append(_svg_text(52, 104, _PREVIEW_JOB_TITLE, size=24, fill="#e2e8f0"))
+        svg.append(_svg_text(640, 104, safe_label, size=15, fill="#e2e8f0"))
+        svg.append(_svg_text(52, 122, _PREVIEW_CONTACT[:72], size=24, fill="#d1d5db"))
         y = 168
-        svg.append(_svg_text(52, y, "SUMMARY", size=11, weight=700, fill=primary))
-        y += 14
-        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY[:78], _PREVIEW_SUMMARY2[:76]], size=10, fill=muted, gap=6)
+        svg.append(_svg_text(52, y, "SUMMARY", size=15, weight=700, fill=primary))
+        y += 20
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY_LINE1[:78], _PREVIEW_SUMMARY_LINE2[:76]], size=24, fill=muted, gap=6)
         svg.append(txt)
-        y += 18
-        svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
-        y += 14
-        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        y += 24
+        svg.append(_svg_text(52, y, "EXPERIENCE", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 20
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS[:2], size=24, fill=muted, gap=6)
         svg.append(txt)
-        y += 16
-        svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 14
-        svg.append(_svg_text(52, y, _PREVIEW_EDU[:70], size=10, fill=muted))
-        y += 54
-        svg.append(_svg_text(52, y, "SKILLS", size=11, weight=700, fill=primary))
-        y += 14
+        y += 28
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_JOB, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_COMBO, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_DATES, size=24, fill=muted))
+        y += 28
+        svg.append(_svg_text(52, y, "EDUCATION", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DEGREE, size=24, weight=600, fill=accent))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_SCHOOL, size=24, fill=muted))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_EDU_DATES, size=24, fill=muted))
+        y += 66
+        svg.append(_svg_text(52, y, "SKILLS", size=15, weight=700, fill=primary))
+        y += 20
         for sk in _PREVIEW_SKILLS:
-            svg.append(_svg_text(52, y, sk, size=10, fill=ink))
-            y += 14
-        y += 10
-        svg.append(_svg_text(52, y, "PROJECTS", size=11, weight=700, fill=primary))
+            svg.append(_svg_text(52, y, sk, size=24, fill=ink))
+            y += 20
         y += 14
-        svg.append(_svg_text(52, y, "Inventory & process redesign — 15% efficiency gain", size=10, fill=muted))
+        svg.append(_svg_text(52, y, "REFERENCES", size=15, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(52, y, _PREVIEW_REFERENCES, size=24, fill=muted))
 
     svg.append("</svg>")
     return "".join(svg)
