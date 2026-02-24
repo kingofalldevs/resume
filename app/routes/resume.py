@@ -5,6 +5,7 @@ import os
 import base64
 import secrets
 import json
+import io
 import urllib.error
 import urllib.request
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app, jsonify, make_response
@@ -148,16 +149,34 @@ def _paystack_verify(reference: str):
     return body.get("data", {})
 
 
-def _build_download_response(resume_data: dict, resume_id: int):
-    """Create downloadable HTML response for a resume."""
+def _build_download_response(resume_data: dict, resume_id: int | None = None):
+    """Create downloadable PDF response for a resume."""
     filename_base = (resume_data.get("name") or "resume").strip().replace(" ", "_")
-    filename = f"{filename_base}_resume.html"
+    filename = f"{filename_base}_resume.pdf"
     template_name = resume_data.get("template_name", "modern_minimal")
-    html = build_resume_html(resume_data, template_name)
-    response = make_response(html)
-    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    html_fragment = build_resume_html(resume_data, template_name)
+    html_doc = (
+        "<!DOCTYPE html><html><head><meta charset='utf-8'></head>"
+        f"<body>{html_fragment}</body></html>"
+    )
+
+    try:
+        from xhtml2pdf import pisa  # Lazy import to avoid hard dependency at app boot.
+    except Exception as exc:
+        raise RuntimeError(
+            "PDF engine is not installed. Please install xhtml2pdf and restart the server."
+        ) from exc
+
+    pdf_buffer = io.BytesIO()
+    result = pisa.CreatePDF(src=html_doc, dest=pdf_buffer, encoding="utf-8")
+    if getattr(result, "err", 0):
+        raise RuntimeError("Could not generate PDF from resume content.")
+
+    response = make_response(pdf_buffer.getvalue())
+    response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-    response.headers["X-Resume-Id"] = str(resume_id)
+    if resume_id is not None:
+        response.headers["X-Resume-Id"] = str(resume_id)
     return response
 
 
@@ -316,7 +335,7 @@ def save():
 def checkout():
     """Show pricing + resume preview before paid actions.
 
-    Download is now free and bypasses payment.
+    Download is now free, bypasses payment, and is not persisted.
     """
     resume_data = session.get("resume_data")
     if not resume_data:
@@ -328,9 +347,13 @@ def checkout():
         action = "download"
 
     if action == "download":
-        resume = _save_resume_record(resume_data, current_user.id)
-        flash("Download is now free. Your resume is ready.", "success")
-        return _build_download_response(resume_data, resume.id)
+        try:
+            flash("Download is now free. Your PDF resume is ready.", "success")
+            return _build_download_response(resume_data, resume_id=None)
+        except Exception as e:
+            current_app.logger.exception("Free download PDF generation failed")
+            flash(f"Could not generate PDF download: {e}", "error")
+            return redirect(url_for("resume.template_picker"))
 
     template_name = resume_data.get("template_name", "modern_minimal")
     html = build_resume_html(resume_data, template_name)
@@ -349,7 +372,7 @@ def checkout():
 def checkout_start():
     """Initialize Paystack for paid actions.
 
-    Download is now free and bypasses payment.
+    Download is now free, bypasses payment, and is not persisted.
     """
     resume_data = session.get("resume_data")
     if not resume_data:
@@ -361,9 +384,13 @@ def checkout_start():
         action = "download"
 
     if action == "download":
-        resume = _save_resume_record(resume_data, current_user.id)
-        flash("Download is now free. Your resume is ready.", "success")
-        return _build_download_response(resume_data, resume.id)
+        try:
+            flash("Download is now free. Your PDF resume is ready.", "success")
+            return _build_download_response(resume_data, resume_id=None)
+        except Exception as e:
+            current_app.logger.exception("Free download PDF generation failed")
+            flash(f"Could not generate PDF download: {e}", "error")
+            return redirect(url_for("resume.template_picker"))
 
     email = (resume_data.get("email") or current_user.email or "").strip()
     if not email:
@@ -429,14 +456,13 @@ def checkout_callback():
         return redirect(url_for("resume.builder"))
 
     session.pop("pending_payment", None)
-    resume = _save_resume_record(resume_data, current_user.id)
-
     if action == "save":
+        resume = _save_resume_record(resume_data, current_user.id)
         flash("Payment successful. Resume saved to dashboard.", "success")
         return redirect(url_for("resume.view", id=resume.id))
 
     # action == "download": retained for compatibility
-    return _build_download_response(resume_data, resume.id)
+    return _build_download_response(resume_data, resume_id=None)
 
 
 def _resume_to_data(resume):
@@ -471,17 +497,16 @@ def view(id):
 @resume_bp.route("/resume/<int:id>/download")
 @login_required
 def download(id):
-    """Download resume as HTML (print to PDF from browser)."""
+    """Download a saved resume as PDF."""
     resume = Resume.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     data = _resume_to_data(resume)
-    html = build_resume_html(data, resume.template_name)
-    filename_base = (data.get("name") or "resume").strip().replace(" ", "_")
-    filename = f"{filename_base}_resume.html"
-    response = make_response(html)
-    response.headers["Content-Type"] = "text/html; charset=utf-8"
-    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-    response.headers["X-Resume-Id"] = str(resume.id)
-    return response
+    data["template_name"] = resume.template_name
+    try:
+        return _build_download_response(data, resume.id)
+    except Exception as e:
+        current_app.logger.exception("Saved resume PDF generation failed")
+        flash(f"Could not generate PDF download: {e}", "error")
+        return redirect(url_for("resume.view", id=resume.id))
 
 
 # Legacy route for PDF upload from landing

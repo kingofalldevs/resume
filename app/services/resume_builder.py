@@ -31,10 +31,146 @@ TEMPLATE_CATALOG = [
 TEMPLATE_BASE_MAP = {item["id"]: item["base"] for item in TEMPLATE_CATALOG}
 TEMPLATES = [item["id"] for item in TEMPLATE_CATALOG]
 
+_BASE_META = {
+    "modern_minimal": {
+        "category": "Modern Professional",
+        "best_for": "Tech, operations, and general roles",
+        "ats_score": 90,
+        "highlights": [
+            "Clean hierarchy for fast recruiter scanning",
+            "Balanced white space and strong readability",
+            "Works across junior to senior profiles",
+        ],
+    },
+    "corporate_professional": {
+        "category": "Corporate Executive",
+        "best_for": "Finance, leadership, and management",
+        "ats_score": 88,
+        "highlights": [
+            "Executive tone with formal presentation",
+            "Strong section framing for achievements",
+            "Great fit for leadership applications",
+        ],
+    },
+    "creative_designer": {
+        "category": "Creative Portfolio",
+        "best_for": "Design, product, and brand roles",
+        "ats_score": 84,
+        "highlights": [
+            "Distinctive visual structure and personality",
+            "Supports portfolio-forward storytelling",
+            "Maintains readability with style",
+        ],
+    },
+    "simple_ats": {
+        "category": "ATS Optimized",
+        "best_for": "High-volume applications and strict ATS",
+        "ats_score": 96,
+        "highlights": [
+            "Maximum ATS compatibility and parsing",
+            "No-fuss structure for keyword matching",
+            "Best for high-application job searches",
+        ],
+    },
+}
+
+_TEMPLATE_META_OVERRIDES = {
+    "modern_minimal": {
+        "best_for": "Software, product, and business operations",
+        "highlights": [
+            "Minimal visual noise, high content focus",
+            "Strong readability on mobile and desktop",
+            "Safe default for most industries",
+        ],
+    },
+    "executive_navy": {
+        "best_for": "Senior management and director applications",
+        "ats_score": 89,
+        "highlights": [
+            "Authority-driven navy color language",
+            "Highlights strategic leadership outcomes",
+            "Great for board-facing profiles",
+        ],
+    },
+    "executive_charcoal": {
+        "best_for": "Consulting and senior professional profiles",
+        "ats_score": 90,
+    },
+    "elegant_serif": {
+        "best_for": "Legal, consulting, and strategy applications",
+        "ats_score": 87,
+    },
+    "bold_orange": {
+        "best_for": "Customer-facing and growth-focused roles",
+        "ats_score": 83,
+    },
+    "clean_slate": {
+        "best_for": "Cross-industry professionals",
+        "ats_score": 91,
+    },
+    "minimal_mono": {
+        "best_for": "Engineering and technical roles",
+        "ats_score": 95,
+    },
+    "two_column_blue": {
+        "best_for": "Analysts, PMs, and structured CV formats",
+        "ats_score": 85,
+    },
+    "two_column_green": {
+        "best_for": "Operations and sustainability-oriented roles",
+        "ats_score": 86,
+    },
+    "premium_gold": {
+        "best_for": "Executive and premium personal branding",
+        "ats_score": 86,
+        "highlights": [
+            "Premium visual polish and presentation",
+            "Excellent for high-stakes applications",
+            "Strong headline and achievement framing",
+        ],
+    },
+    "startup_modern": {
+        "best_for": "Startups, growth, and product teams",
+        "ats_score": 89,
+    },
+    "classic_black": {
+        "best_for": "Formal applications and traditional employers",
+        "ats_score": 94,
+    },
+    "fresh_teal": {
+        "best_for": "Modern business and customer success roles",
+        "ats_score": 88,
+    },
+    "plum_accent": {
+        "best_for": "Leadership and specialist expert profiles",
+        "ats_score": 87,
+    },
+    "soft_gray": {
+        "best_for": "Administrative and support functions",
+        "ats_score": 95,
+    },
+    "ivory_professional": {
+        "best_for": "Consulting and polished professional branding",
+        "ats_score": 88,
+    },
+    "dark_sidebar": {
+        "best_for": "Skill-heavy and portfolio-forward resumes",
+        "ats_score": 82,
+    },
+}
+
 
 def get_template_catalog() -> list[dict]:
     """Template metadata used across dashboard and picker UIs."""
-    return TEMPLATE_CATALOG
+    enriched = []
+    for item in TEMPLATE_CATALOG:
+        base_meta = _BASE_META.get(item["base"], {})
+        override = _TEMPLATE_META_OVERRIDES.get(item["id"], {})
+        merged = dict(item)
+        merged.update(base_meta)
+        merged.update(override)
+        enriched.append(merged)
+    return enriched
 
 
 def _ai_enhance(resume_data: dict) -> dict:

@@ -21,6 +21,25 @@ _DEFAULT_MODEL = "Qwen/Qwen2.5-Coder-32B-Instruct"
 _HF_API_URL = "https://router.huggingface.co/v1/chat/completions"
 
 
+def _read_local_env_value(key: str) -> str:
+    """Best-effort fallback for loading a single key from local .env."""
+    env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+    if not os.path.exists(env_path):
+        return ""
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                if k.strip() == key:
+                    return v.strip().strip('"').strip("'")
+    except Exception:
+        return ""
+    return ""
+
+
 def _get_settings():
     """Resolve Hugging Face settings from app config or environment."""
     api_token = ""
@@ -32,10 +51,12 @@ def _get_settings():
         pass
     if not api_token:
         api_token = os.environ.get("HF_API_TOKEN") or os.environ.get("HF_TOKEN", "")
+    if not api_token:
+        api_token = _read_local_env_value("HF_API_TOKEN") or _read_local_env_value("HF_TOKEN")
     if not model:
         model = os.environ.get("HF_MODEL", _DEFAULT_MODEL)
     if not api_token:
-        raise ValueError("HF_API_TOKEN not set")
+        raise ValueError("HF_API_TOKEN not set. Add it to environment or .env, then restart server.")
     return api_token, model
 
 

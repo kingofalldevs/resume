@@ -10,3 +10,4 @@ sendgrid
 python-dotenv>=1.0.0
 pypdf>=4.0.0
 werkzeug>=3.0.0
+xhtml2pdf

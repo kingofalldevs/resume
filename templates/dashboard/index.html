@@ -9,101 +9,6 @@
         max-width: 100%;
         margin: 0 auto;
     }
-    .dash-hero {
-        position: relative;
-        overflow: hidden;
-        border-radius: 24px;
-        padding: 2rem 1.4rem;
-        background: linear-gradient(130deg, #ffffff 0%, #fff6ef 62%, #ffe4ce 100%);
-        color: #111827;
-        border: 1px solid rgba(255, 102, 0, 0.22);
-        box-shadow: 0 12px 35px rgba(255, 102, 0, 0.12);
-    }
-    .dash-hero-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        align-items: center;
-    }
-    .dash-hero-copy {
-        position: relative;
-        z-index: 1;
-    }
-    .dash-hero-media {
-        position: relative;
-        z-index: 1;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 102, 0, 0.28);
-        background: #fff3e7;
-    }
-    .dash-hero-media img {
-        display: block;
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-    .dash-hero::after {
-        content: "";
-        position: absolute;
-        width: 280px;
-        height: 280px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,102,0,0.24) 0%, rgba(255,255,255,0) 70%);
-        right: -110px;
-        top: -80px;
-        pointer-events: none;
-    }
-    .dash-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 1px solid rgba(255, 102, 0, 0.24);
-        border-radius: 999px;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #b84a00;
-        background: rgba(255, 255, 255, 0.82);
-    }
-    .dash-title {
-        font-size: clamp(1.6rem, 3.2vw, 2.35rem);
-        line-height: 1.15;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        max-width: 720px;
-        margin-bottom: 0.8rem;
-    }
-    .dash-sub {
-        color: #4b5563;
-        max-width: 760px;
-        line-height: 1.6;
-        margin-bottom: 1.4rem;
-    }
-    .dash-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-    .dash-btn-primary {
-        background: #ff6600;
-        color: #fff;
-        border: 1px solid #ff6600;
-    }
-    .dash-btn-primary:hover {
-        background: #e85b00;
-        color: #fff;
-    }
-    .dash-btn-secondary {
-        color: #b84a00;
-        border: 1px solid rgba(255, 102, 0, 0.38);
-        background: rgba(255, 255, 255, 0.82);
-    }
-    .dash-btn-secondary:hover {
-        background: #fff;
-        color: #ff6600;
-    }
     .dash-stat {
         background: #fff;
         border-radius: 18px;
@@ -223,13 +128,14 @@
     }
     .tpl-image {
         width: 100%;
-        height: 180px;
+        height: 280px;
         object-fit: cover;
         object-position: top center;
         border-radius: 10px;
         border: 1px solid #dbe1e8;
         display: block;
         background: #fff;
+        filter: contrast(1.08) saturate(1.05);
     }
     .tpl-meta {
         padding: 0.85rem 0.9rem;
@@ -244,7 +150,7 @@
         font-size: 0.78rem;
         color: #6b7280;
         line-height: 1.45;
-        min-height: 2.2rem;
+        min-height: 1.8rem;
     }
     .tpl-btn {
         margin-top: 0.55rem;
@@ -289,15 +195,11 @@
         .extra-template.tpl-collapsed {
             display: none;
         }
+        .tpl-image {
+            height: 230px;
+        }
     }
     @media (min-width: 768px) {
-        .dash-hero {
-            padding: 2.35rem 2.1rem;
-        }
-        .dash-hero-grid {
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 1.25rem;
-        }
         .tpl-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -318,51 +220,6 @@
 
 {% block content %}
 <div class="dashboard-shell space-y-7">
-    <section class="dash-hero">
-        <div class="dash-hero-grid">
-            <div class="dash-hero-copy">
-                <div class="dash-eyebrow">
-                    <i class="fas fa-briefcase"></i>
-                    Career Dashboard
-                </div>
-                <h1 class="dash-title">Welcome, {{ ((current_user.full_name or '').strip().split() or ['Professional'])[0] }}. Build stronger applications with confidence.</h1>
-                <p class="dash-sub">Create polished resumes, request interview preparation, and get expert support from one professional workspace.</p>
-                <div class="dash-hero-actions">
-                    <a href="{{ url_for('resume.builder') }}" class="dash-btn-primary rounded-xl px-5 py-3 font-semibold transition" data-show-loading>
-                        <i class="fas fa-plus mr-2"></i>Create Resume
-                    </a>
-                    <a href="{{ url_for('dashboard.book_interview') }}" class="dash-btn-secondary rounded-xl px-5 py-3 font-semibold transition">
-                        <i class="fas fa-calendar-check mr-2"></i>Book Interview
-                    </a>
-                </div>
-            </div>
-            <div class="dash-hero-media">
-                <img src="{{ url_for('static', filename='experts_review_resume.png') }}" alt="Experts review your resume">
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h2 class="dash-section-title">Professional Services</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{{ url_for('resume.builder') }}" class="dash-action-card" data-show-loading>
-                <div class="dash-action-icon create"><i class="fas fa-file-signature"></i></div>
-                <h3 class="dash-action-title">Resume Builder</h3>
-                <p class="dash-action-desc">Generate an ATS-friendly resume with guided fields and structured templates.</p>
-            </a>
-            <a href="{{ url_for('dashboard.book_interview') }}" class="dash-action-card">
-                <div class="dash-action-icon book"><i class="fas fa-user-tie"></i></div>
-                <h3 class="dash-action-title">Mock Interview</h3>
-                <p class="dash-action-desc">Book a tailored interview session to practice delivery and sharpen responses.</p>
-            </a>
-            <a href="{{ url_for('dashboard.chat_expert') }}" class="dash-action-card">
-                <div class="dash-action-icon chat"><i class="fas fa-message"></i></div>
-                <h3 class="dash-action-title">Expert Consultation</h3>
-                <p class="dash-action-desc">Receive focused feedback on resume quality, positioning, and job-readiness.</p>
-            </a>
-        </div>
-    </section>
-
     <section>
         <div class="flex justify-between items-center mb-3">
             <h2 class="dash-section-title mb-0">Resume Templates (20 Styles)</h2>
