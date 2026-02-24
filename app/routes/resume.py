@@ -333,27 +333,16 @@ def save():
 @resume_bp.route("/checkout")
 @login_required
 def checkout():
-    """Show pricing + resume preview before paid actions.
-
-    Download is now free, bypasses payment, and is not persisted.
-    """
+    """Checkout/download flow removed; only save remains."""
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("No resume data available. Please build your resume first.", "error")
         return redirect(url_for("resume.builder"))
 
-    action = request.args.get("action", "download").strip().lower()
-    if action not in {"save", "download"}:
-        action = "download"
-
-    if action == "download":
-        try:
-            flash("Download is now free. Your PDF resume is ready.", "success")
-            return _build_download_response(resume_data, resume_id=None)
-        except Exception as e:
-            current_app.logger.exception("Free download PDF generation failed")
-            flash(f"Could not generate PDF download: {e}", "error")
-            return redirect(url_for("resume.template_picker"))
+    action = request.args.get("action", "save").strip().lower()
+    if action != "save":
+        flash("Download flow has been removed.", "info")
+        return redirect(url_for("dashboard.index"))
 
     template_name = resume_data.get("template_name", "modern_minimal")
     html = build_resume_html(resume_data, template_name)
@@ -370,27 +359,16 @@ def checkout():
 @resume_bp.route("/checkout/start", methods=["POST"])
 @login_required
 def checkout_start():
-    """Initialize Paystack for paid actions.
-
-    Download is now free, bypasses payment, and is not persisted.
-    """
+    """Initialize Paystack for save action only."""
     resume_data = session.get("resume_data")
     if not resume_data:
         flash("No resume data available. Please build your resume first.", "error")
         return redirect(url_for("resume.builder"))
 
-    action = request.form.get("action", "download").strip().lower()
-    if action not in {"save", "download"}:
-        action = "download"
-
-    if action == "download":
-        try:
-            flash("Download is now free. Your PDF resume is ready.", "success")
-            return _build_download_response(resume_data, resume_id=None)
-        except Exception as e:
-            current_app.logger.exception("Free download PDF generation failed")
-            flash(f"Could not generate PDF download: {e}", "error")
-            return redirect(url_for("resume.template_picker"))
+    action = request.form.get("action", "save").strip().lower()
+    if action != "save":
+        flash("Download flow has been removed.", "info")
+        return redirect(url_for("dashboard.index"))
 
     email = (resume_data.get("email") or current_user.email or "").strip()
     if not email:
@@ -412,13 +390,14 @@ def checkout_start():
 @resume_bp.route("/checkout/callback")
 @login_required
 def checkout_callback():
-    """Handle Paystack callback, verify transaction, then execute requested action."""
+    """Handle Paystack callback and complete save only."""
     reference = (request.args.get("reference") or request.args.get("trxref") or "").strip()
     pending = session.get("pending_payment") or {}
     expected_ref = pending.get("reference", "")
-    action = (pending.get("action") or "download").strip().lower()
-    if action not in {"save", "download"}:
-        action = "download"
+    action = (pending.get("action") or "save").strip().lower()
+    if action != "save":
+        flash("Invalid callback action.", "error")
+        return redirect(url_for("dashboard.index"))
 
     if not reference or not expected_ref or reference != expected_ref:
         flash("Invalid or expired payment reference. Please try again.", "error")
@@ -461,8 +440,8 @@ def checkout_callback():
         flash("Payment successful. Resume saved to dashboard.", "success")
         return redirect(url_for("resume.view", id=resume.id))
 
-    # action == "download": retained for compatibility
-    return _build_download_response(resume_data, resume_id=None)
+    flash("Invalid callback action.", "error")
+    return redirect(url_for("dashboard.index"))
 
 
 def _resume_to_data(resume):
@@ -497,16 +476,9 @@ def view(id):
 @resume_bp.route("/resume/<int:id>/download")
 @login_required
 def download(id):
-    """Download a saved resume as PDF."""
-    resume = Resume.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    data = _resume_to_data(resume)
-    data["template_name"] = resume.template_name
-    try:
-        return _build_download_response(data, resume.id)
-    except Exception as e:
-        current_app.logger.exception("Saved resume PDF generation failed")
-        flash(f"Could not generate PDF download: {e}", "error")
-        return redirect(url_for("resume.view", id=resume.id))
+    """Download flow removed."""
+    flash("Download has been removed from this app.", "info")
+    return redirect(url_for("dashboard.index"))
 
 
 # Legacy route for PDF upload from landing

@@ -54,6 +54,29 @@ def _svg_lines(x, y, widths, color="#9aa6b2", height=6, gap=8, rx=3):
     return "".join(rows), y
 
 
+def _svg_text_lines(x, y, lines, size=10, fill="#64748b", gap=6):
+    """Draw multiple lines of readable text; return final y."""
+    out = []
+    for line in lines:
+        out.append(_svg_text(x, y, line[:80] if len(line) > 80 else line, size=size, fill=fill))
+        y += size + gap
+    return "".join(out), y
+
+
+# Sample resume content so previews show real-looking text
+_PREVIEW_SUMMARY = "Results-driven operations leader with 10+ years of experience in process improvement and team management."
+_PREVIEW_SUMMARY2 = "Proven track record in cost reduction and operational excellence across FMCG and logistics sectors."
+_PREVIEW_EXP_TITLE = "Operations Manager · ABC Company Ltd"
+_PREVIEW_EXP_BULLETS = [
+    "Led a team of 25; reduced operational costs by 18% in 12 months.",
+    "Implemented new inventory system cutting waste by 22%.",
+    "Collaborated with HR on recruitment and performance reviews.",
+]
+_PREVIEW_EDU = "MBA, University of Ghana · BSc Business Administration, KNUST"
+_PREVIEW_SKILLS = ["Strategic Planning", "Budget Management", "Team Leadership", "Process Improvement", "Stakeholder Engagement"]
+_PREVIEW_CERTS = "PMP · Six Sigma Green Belt · Health & Safety Level 3"
+
+
 def _build_template_preview_svg(template_name: str, label: str, index: int) -> str:
     style = _TEMPLATE_PREVIEW_STYLES.get(
         template_name,
@@ -88,40 +111,35 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
         svg.append(_svg_text(54, 170, safe_label, size=11, fill="#e2e8f0"))
         svg.append(_svg_rect(54, 202, 165, 1, "#dbeafe"))
         svg.append(_svg_text(54, 230, "CONTACT", size=11, weight=700, fill="#ffffff"))
-        lines, _ = _svg_lines(54, 245, [152, 165, 142], color="#cbd5e1", height=6, gap=9)
-        svg.append(lines)
+        svg.append(_svg_text(54, 248, "Accra, Ghana", size=10, fill="#cbd5e1"))
+        svg.append(_svg_text(54, 264, "+233 XX XXX XXXX", size=10, fill="#e2e8f0"))
+        svg.append(_svg_text(54, 280, "you@email.com", size=10, fill="#cbd5e1"))
         svg.append(_svg_text(54, 316, "SKILLS", size=11, weight=700, fill="#ffffff"))
-        svg.append(_svg_rect(54, 330, 146, 7, "#ffffff", rx=3))
-        svg.append(_svg_rect(54, 346, 124, 7, "#e2e8f0", rx=3))
-        svg.append(_svg_rect(54, 362, 136, 7, "#ffffff", rx=3))
-        svg.append(_svg_rect(54, 378, 112, 7, "#e2e8f0", rx=3))
+        for i, sk in enumerate(_PREVIEW_SKILLS[:5]):
+            svg.append(_svg_text(54, 334 + i * 18, sk, size=10, fill="#e2e8f0"))
         svg.append(_svg_text(286, 84, "PROFESSIONAL SUMMARY", size=11, weight=700, fill=primary))
-        lines, y = _svg_lines(286, 98, [542, 522, 540], color=muted)
-        svg.append(lines)
-        svg.append(_svg_text(286, y + 20, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 34
-        for _ in range(3):
-            svg.append(_svg_rect(286, y, 182, 7, accent, rx=3))
-            y += 14
-            lines, y = _svg_lines(286, y, [546, 524, 548], color=muted)
-            svg.append(lines)
-            y += 18
+        txt, y = _svg_text_lines(286, 98, [_PREVIEW_SUMMARY[:70], _PREVIEW_SUMMARY2[:68]], size=10, fill=muted, gap=8)
+        svg.append(txt)
+        svg.append(_svg_text(286, y + 16, "EXPERIENCE", size=11, weight=700, fill=primary))
+        y += 32
+        svg.append(_svg_text(286, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
+        y += 14
+        txt, y = _svg_text_lines(286, y, _PREVIEW_EXP_BULLETS, size=9, fill=muted, gap=6)
+        svg.append(txt)
+        y += 14
         svg.append(_svg_text(286, y, "EDUCATION", size=11, weight=700, fill=primary))
         y += 14
-        lines, _ = _svg_lines(286, y, [382, 350, 368], color=muted)
-        svg.append(lines)
-        y += 56
+        svg.append(_svg_text(286, y, _PREVIEW_EDU[:72], size=10, fill=muted))
+        y += 44
         svg.append(_svg_text(286, y, "PROJECTS", size=11, weight=700, fill=primary))
         y += 12
-        svg.append(_svg_rect(286, y, 220, 7, accent, rx=3))
+        svg.append(_svg_text(286, y, "Inventory & process redesign", size=10, weight=600, fill=accent))
         y += 14
-        lines, y = _svg_lines(286, y, [548, 526, 540], color=muted)
-        svg.append(lines)
-        y += 18
+        svg.append(_svg_text(286, y, "Led cross-functional project; delivered 15% efficiency gain.", size=9, fill=muted))
+        y += 24
         svg.append(_svg_text(286, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
         y += 12
-        lines, _ = _svg_lines(286, y, [420, 396, 412], color=muted)
-        svg.append(lines)
+        svg.append(_svg_text(286, y, _PREVIEW_CERTS, size=10, fill=muted))
 
     elif layout == "split":
         svg.append(_svg_rect(22, 20, 856, 130, primary, rx=14))
@@ -131,39 +149,35 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
         svg.append(_svg_rect(56, 182, 372, 1050, "#ffffff", rx=10, stroke="#e2e8f0"))
         svg.append(_svg_rect(448, 182, 396, 1050, "#ffffff", rx=10, stroke="#e2e8f0"))
         svg.append(_svg_text(78, 216, "PROFILE", size=11, weight=700, fill=primary))
-        lines, y = _svg_lines(78, 230, [324, 306, 318], color=muted)
-        svg.append(lines)
-        svg.append(_svg_text(78, y + 24, "SKILLS", size=11, weight=700, fill=primary))
-        y += 38
-        for w in [210, 250, 200, 238, 198]:
-            svg.append(_svg_rect(78, y, w, 8, accent, rx=4))
+        txt, y = _svg_text_lines(78, 230, [_PREVIEW_SUMMARY[:52], _PREVIEW_SUMMARY2[:50]], size=10, fill=muted, gap=8)
+        svg.append(txt)
+        svg.append(_svg_text(78, y + 20, "SKILLS", size=11, weight=700, fill=primary))
+        y += 36
+        for sk in _PREVIEW_SKILLS:
+            svg.append(_svg_text(78, y, sk, size=10, fill=ink))
             y += 16
-        svg.append(_svg_text(78, y + 12, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 26
-        lines, y = _svg_lines(78, y, [300, 288, 302], color=muted)
-        svg.append(lines)
-        y += 16
+        svg.append(_svg_text(78, y + 4, "CERTIFICATIONS", size=11, weight=700, fill=primary))
+        y += 20
+        svg.append(_svg_text(78, y, _PREVIEW_CERTS, size=10, fill=muted))
+        y += 28
         svg.append(_svg_text(78, y, "TOOLS", size=11, weight=700, fill=primary))
-        y += 12
-        lines, _ = _svg_lines(78, y, [292, 274, 286], color=muted)
-        svg.append(lines)
+        y += 14
+        svg.append(_svg_text(78, y, "SAP · Excel · MS Project", size=10, fill=muted))
         svg.append(_svg_text(470, 216, "EXPERIENCE", size=11, weight=700, fill=primary))
         y = 230
-        for _ in range(4):
-            svg.append(_svg_rect(470, y, 240, 7, accent, rx=3))
+        for _ in range(2):
+            svg.append(_svg_text(470, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
             y += 14
-            lines, y = _svg_lines(470, y, [338, 322, 346], color=muted)
-            svg.append(lines)
-            y += 20
+            txt, y = _svg_text_lines(470, y, _PREVIEW_EXP_BULLETS[:2], size=9, fill=muted, gap=6)
+            svg.append(txt)
+            y += 18
         svg.append(_svg_text(470, y, "EDUCATION", size=11, weight=700, fill=primary))
         y += 14
-        lines, _ = _svg_lines(470, y, [332, 316, 336], color=muted)
-        svg.append(lines)
+        svg.append(_svg_text(470, y, _PREVIEW_EDU[:58], size=10, fill=muted))
         y += 56
         svg.append(_svg_text(470, y, "KEY ACHIEVEMENTS", size=11, weight=700, fill=primary))
         y += 12
-        lines, _ = _svg_lines(470, y, [342, 324, 338, 314], color=muted)
-        svg.append(lines)
+        svg.append(_svg_text(470, y, "Cost reduction 18% · Team of 25 · Process redesign", size=10, fill=muted))
 
     elif layout == "executive":
         svg.append(_svg_rect(22, 20, 856, 160, "#ffffff", rx=14))
@@ -172,39 +186,37 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
         svg.append(_svg_text(52, 116, "AKOSUA MENSAH", size=35, weight=800, fill=ink))
         svg.append(_svg_text(52, 148, "Senior Operations Manager", size=14, fill="#475569"))
         svg.append(_svg_rect(620, 92, 228, 70, "#f8fafc", rx=8, stroke="#d9e2ec"))
-        lines, _ = _svg_lines(640, 112, [186, 174, 160], color="#94a3b8", height=6, gap=8)
-        svg.append(lines)
+        svg.append(_svg_text(640, 108, "Accra, Ghana", size=10, fill="#64748b"))
+        svg.append(_svg_text(640, 124, "+233 XX XXX XXXX", size=10, fill="#64748b"))
+        svg.append(_svg_text(640, 140, "you@email.com", size=10, fill="#64748b"))
         svg.append(_svg_rect(52, 198, 796, 2, accent, rx=1))
         svg.append(_svg_text(52, 188, "Accra, Ghana  •  +233 XX XXX XXXX  •  you@email.com  •  linkedin.com/in/profile", size=10, fill="#64748b"))
         y = 228
         svg.append(_svg_text(52, y, "PROFESSIONAL SUMMARY", size=11, weight=700, fill=primary))
-        y += 12
-        lines, y = _svg_lines(52, y, [786, 760, 772], color=muted)
-        svg.append(lines)
-        y += 20
+        y += 14
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY, _PREVIEW_SUMMARY2], size=10, fill=muted, gap=8)
+        svg.append(txt)
+        y += 18
         svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 12
-        for _ in range(4):
-            svg.append(_svg_rect(52, y, 280, 8, accent, rx=4))
-            y += 14
-            lines, y = _svg_lines(52, y, [782, 760, 770], color=muted)
-            svg.append(lines)
-            y += 18
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
+        y += 14
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        svg.append(txt)
+        y += 16
         svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
         y += 14
-        lines, _ = _svg_lines(52, y, [482, 460, 470], color=muted)
-        svg.append(lines)
+        svg.append(_svg_text(52, y, _PREVIEW_EDU, size=10, fill=muted))
         y += 56
         svg.append(_svg_text(52, y, "CORE SKILLS", size=11, weight=700, fill=primary))
-        y += 12
-        for w in [180, 200, 160, 210, 190, 170]:
-            svg.append(_svg_rect(52, y, w, 8, accent, rx=4))
+        y += 14
+        for sk in _PREVIEW_SKILLS:
+            svg.append(_svg_text(52, y, sk, size=10, fill=ink))
             y += 14
-        y += 10
+        y += 8
         svg.append(_svg_text(52, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
-        y += 12
-        lines, _ = _svg_lines(52, y, [520, 490, 510], color=muted)
-        svg.append(lines)
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_CERTS, size=10, fill=muted))
 
     elif layout == "clean":
         svg.append(_svg_rect(22, 20, 856, 1240, "#ffffff", rx=14, stroke="#d6dee8"))
@@ -214,19 +226,33 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
         svg.append(_svg_text(450, 151, "Accra • +233 XX XXX XXXX • email@example.com • linkedin.com/in/profile", size=10, fill="#64748b", anchor="middle"))
         svg.append(_svg_rect(52, 156, 796, 1, accent))
         y = 188
-        for title, widths in [
-            ("SUMMARY", [782, 760, 772]),
-            ("EXPERIENCE", [782, 770, 756, 770, 744]),
-            ("EDUCATION", [520, 500, 480]),
-            ("SKILLS", [420, 398, 372]),
-            ("PROJECTS", [640, 618, 632]),
-            ("CERTIFICATIONS", [500, 482, 495]),
-        ]:
-            svg.append(_svg_text(52, y, title, size=11, weight=700, fill=primary))
-            y += 12
-            lines, y = _svg_lines(52, y, widths, color=muted)
-            svg.append(lines)
-            y += 18
+        svg.append(_svg_text(52, y, "SUMMARY", size=11, weight=700, fill=primary))
+        y += 14
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY[:78], _PREVIEW_SUMMARY2[:76]], size=10, fill=muted, gap=6)
+        svg.append(txt)
+        y += 16
+        svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
+        y += 14
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        svg.append(txt)
+        y += 14
+        svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_EDU[:75], size=10, fill=muted))
+        y += 36
+        svg.append(_svg_text(52, y, "SKILLS", size=11, weight=700, fill=primary))
+        y += 14
+        svg.append(_svg_text(52, y, "  ·  ".join(_PREVIEW_SKILLS), size=10, fill=muted))
+        y += 28
+        svg.append(_svg_text(52, y, "PROJECTS", size=11, weight=700, fill=primary))
+        y += 14
+        svg.append(_svg_text(52, y, "Inventory & process redesign — 15% efficiency gain", size=10, fill=muted))
+        y += 28
+        svg.append(_svg_text(52, y, "CERTIFICATIONS", size=11, weight=700, fill=primary))
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_CERTS, size=10, fill=muted))
 
     else:  # topbar
         svg.append(_svg_rect(22, 20, 856, 1240, "#ffffff", rx=14, stroke="#d6dee8"))
@@ -237,33 +263,30 @@ def _build_template_preview_svg(template_name: str, label: str, index: int) -> s
         svg.append(_svg_text(52, 122, "Accra • +233 XX XXX XXXX • email@example.com • linkedin.com/in/profile", size=10, fill="#d1d5db"))
         y = 168
         svg.append(_svg_text(52, y, "SUMMARY", size=11, weight=700, fill=primary))
-        y += 12
-        lines, y = _svg_lines(52, y, [780, 760, 772], color=muted)
-        svg.append(lines)
-        y += 20
+        y += 14
+        txt, y = _svg_text_lines(52, y, [_PREVIEW_SUMMARY[:78], _PREVIEW_SUMMARY2[:76]], size=10, fill=muted, gap=6)
+        svg.append(txt)
+        y += 18
         svg.append(_svg_text(52, y, "EXPERIENCE", size=11, weight=700, fill=primary))
-        y += 12
-        for _ in range(3):
-            svg.append(_svg_rect(52, y, 260, 8, accent, rx=3))
-            y += 14
-            lines, y = _svg_lines(52, y, [782, 760, 774], color=muted)
-            svg.append(lines)
-            y += 18
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_EXP_TITLE, size=10, weight=600, fill=accent))
+        y += 14
+        txt, y = _svg_text_lines(52, y, _PREVIEW_EXP_BULLETS, size=10, fill=muted, gap=6)
+        svg.append(txt)
+        y += 16
         svg.append(_svg_text(52, y, "EDUCATION", size=11, weight=700, fill=primary))
-        y += 12
-        lines, _ = _svg_lines(52, y, [452, 430, 445], color=muted)
-        svg.append(lines)
+        y += 14
+        svg.append(_svg_text(52, y, _PREVIEW_EDU[:70], size=10, fill=muted))
         y += 54
         svg.append(_svg_text(52, y, "SKILLS", size=11, weight=700, fill=primary))
-        y += 12
-        for w in [170, 190, 160, 180, 200]:
-            svg.append(_svg_rect(52, y, w, 8, accent, rx=4))
+        y += 14
+        for sk in _PREVIEW_SKILLS:
+            svg.append(_svg_text(52, y, sk, size=10, fill=ink))
             y += 14
-        y += 12
+        y += 10
         svg.append(_svg_text(52, y, "PROJECTS", size=11, weight=700, fill=primary))
-        y += 12
-        lines, _ = _svg_lines(52, y, [780, 760, 768], color=muted)
-        svg.append(lines)
+        y += 14
+        svg.append(_svg_text(52, y, "Inventory & process redesign — 15% efficiency gain", size=10, fill=muted))
 
     svg.append("</svg>")
     return "".join(svg)
@@ -317,13 +340,6 @@ def template_preview(template_name: str):
     idx, tpl = by_id[template_name]
     svg = _build_template_preview_svg(template_name=template_name, label=tpl["label"], index=idx)
     return Response(svg, mimetype="image/svg+xml")
-
-
-@dashboard_bp.route("/pricing")
-@login_required
-def pricing():
-    """Simple pricing page for core services."""
-    return render_template("dashboard/pricing.html")
 
 
 @dashboard_bp.route("/book-interview", methods=["GET", "POST"])

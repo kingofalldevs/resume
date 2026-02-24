@@ -118,162 +118,28 @@ def _resolve_pending_user(pending: dict):
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
-    """Signup is disabled; send users to dashboard."""
-    flash("Sign up is disabled. Welcome to your dashboard.", "info")
+    """Auth removed; send users to dashboard."""
+    flash("Authentication has been removed.", "info")
     return redirect(url_for("dashboard.index"))
-
-    if request.method == "POST":
-        # Defensive reset in case a previous DB error left session aborted.
-        db.session.rollback()
-        full_name = request.form.get("full_name", "").strip()
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-
-        # Validation
-        if not full_name or not email or not password:
-            flash("Please fill in all fields.", "error")
-            return render_template("auth/signup.html")
-
-        if len(password) < 8:
-            flash("Password must be at least 8 characters.", "error")
-            return render_template("auth/signup.html")
-
-        try:
-            if User.query.filter_by(email=email).first():
-                flash("An account with that email already exists.", "error")
-                return render_template("auth/signup.html")
-        except SQLAlchemyError:
-            db.session.rollback()
-            current_app.logger.exception("Signup email lookup failed")
-            flash("Database error while checking email. Please try again.", "error")
-            return render_template("auth/signup.html")
-
-        user = User(
-            full_name=full_name,
-            email=email,
-            password_hash=hash_password(password),
-        )
-        try:
-            db.session.add(user)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            current_app.logger.exception("Signup commit failed")
-            flash("Could not create account right now. Please try again.", "error")
-            return render_template("auth/signup.html")
-
-        # In tests, keep direct login flow to preserve existing test behavior.
-        if current_app.config.get("TESTING"):
-            login_user(user, remember=True)
-            flash("Account created successfully!", "success")
-            return redirect(url_for("dashboard.index"))
-
-        if _reuse_pending_otp_if_active(user.id, user.email, True, url_for("dashboard.index")):
-            flash("A verification code was already sent. Please use the latest code in your email.", "info")
-            return redirect(url_for("auth.verify_otp"))
-
-        otp = f"{secrets.randbelow(1000000):06d}"
-        ok, err = send_login_otp_email(user.email, otp, int(_otp_expiry_seconds() / 60))
-        if not ok:
-            # If verification email fails, remove the just-created account
-            # so unverified users are not left in a confusing state.
-            try:
-                db.session.delete(user)
-                db.session.commit()
-            except SQLAlchemyError:
-                db.session.rollback()
-                current_app.logger.exception("Signup rollback delete failed after OTP send failure")
-            flash(err, "error")
-            return render_template("auth/signup.html")
-
-        session["pending_login_otp"] = {
-            "user_id": user.id,
-            "email": user.email,
-            "otp_hash": _otp_hash(user.email, otp),
-            "expires_at": int(time.time()) + _otp_expiry_seconds(),
-            "attempts_left": _otp_max_attempts(),
-            "remember": True,
-            "next_url": url_for("dashboard.index"),
-            "source": "signup",
-        }
-        flash("Account created. We sent a verification code to your email.", "info")
-        return redirect(url_for("auth.verify_otp"))
-
-    return render_template("auth/signup.html")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """Login is disabled; send users to dashboard."""
-    flash("Sign in is disabled. Welcome to your dashboard.", "info")
+    """Auth removed; send users to dashboard."""
+    flash("Authentication has been removed.", "info")
     return redirect(url_for("dashboard.index"))
-
-    if request.method == "POST":
-        # Defensive reset in case a previous DB error left session aborted.
-        db.session.rollback()
-        # Force fresh auth evaluation so stale remembered sessions
-        # never look like a successful password login.
-        if current_user.is_authenticated:
-            logout_user()
-
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-
-        try:
-            user = User.query.filter_by(email=email).first()
-        except SQLAlchemyError:
-            db.session.rollback()
-            current_app.logger.exception("Login user lookup failed")
-            flash("Database error during login. Please try again.", "error")
-            return render_template("auth/login.html")
-        if user and verify_password(password, user.password_hash):
-            next_url = request.args.get("next", "")
-            if not _is_safe_redirect_url(next_url):
-                next_url = url_for("dashboard.index")
-
-            remember = _parse_remember_flag(request.form.get("remember"))
-            if current_app.config.get("TESTING"):
-                login_user(user, remember=remember)
-                return redirect(next_url)
-
-            if _reuse_pending_otp_if_active(user.id, user.email, remember, next_url):
-                flash("A verification code was already sent. Please use the latest code in your email.", "info")
-                return redirect(url_for("auth.verify_otp"))
-
-            otp = f"{secrets.randbelow(1000000):06d}"
-            ok, err = send_login_otp_email(user.email, otp, int(_otp_expiry_seconds() / 60))
-            if not ok:
-                flash(err, "error")
-                return render_template("auth/login.html")
-
-            session["pending_login_otp"] = {
-                "user_id": user.id,
-                "email": user.email,
-                "otp_hash": _otp_hash(user.email, otp),
-                "expires_at": int(time.time()) + _otp_expiry_seconds(),
-                "attempts_left": _otp_max_attempts(),
-                "remember": remember,
-                "next_url": next_url,
-                "source": "login",
-            }
-            flash("We sent a verification code to your email. Enter it to complete sign-in.", "info")
-            return redirect(url_for("auth.verify_otp"))
-
-        flash("Invalid email or password.", "error")
-
-    return render_template("auth/login.html")
 
 
 @auth_bp.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
-    """OTP verification is disabled; send users to dashboard."""
-    flash("Verification is disabled. Welcome to your dashboard.", "info")
+    """Auth removed; send users to dashboard."""
+    flash("Authentication has been removed.", "info")
     return redirect(url_for("dashboard.index"))
 
 
 @auth_bp.route("/logout")
 @login_required
 def logout():
-    """Logout is disabled in dashboard-only mode."""
-    flash("Logout is disabled in dashboard-only mode.", "info")
+    """Auth removed; send users to dashboard."""
+    flash("Authentication has been removed.", "info")
     return redirect(url_for("dashboard.index"))
